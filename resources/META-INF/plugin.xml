@@ -1,0 +1,48 @@
+<idea-plugin>
+  <id>com.denghb.eorm.plugin</id>
+  <name>EOrm</name>
+  <version>1.0.1</version>
+  <vendor email="i@denghb.com" url="https://githu.com/deng-hb/eorm-idea-plugin">denghb</vendor>
+
+  <description>
+    <![CDATA[
+      <h2>EOrm plugin</h2>
+      Used for <a href="https://githu.com/deng-hb/eorm-spring">eorm-spring</a>
+      EOrm based spring-jdbc JdbcTemplate & NamedParameterJdbcTemplate a every good ORM framework.
+    ]]>
+  </description>
+
+  <change-notes>
+    <![CDATA[
+      <h2>v1.0.1</h2>
+      <h3>SQL Highlight</h3>
+      <p>
+        <pre>
+          <code style="color:#203DBF">
+          String sql = ""/*{
+            <span style="color:#008000">select</span> * <span style="color:#008000">from</span> tb_user
+          }*/;
+          </code>
+        </pre>
+      </p>
+    ]]>
+  </change-notes>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+  <idea-version since-build="173.0"/>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+       on how to target different products -->
+  <!-- uncomment to enable plugin in all products -->
+  <depends>com.intellij.modules.lang</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- Add your extensions here -->
+    <annotator language="JAVA" implementationClass="com.denghb.eorm.plugin.MultiLineSQLHighlighter"/>
+  </extensions>
+
+  <actions>
+    <!-- Add your actions here -->
+  </actions>
+
+</idea-plugin>
