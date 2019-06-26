@@ -2,6 +2,7 @@ package com.denghb.eorm.plugin;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
+import com.intellij.openapi.editor.actionSystem.EditorActionManager;
 import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
@@ -13,8 +14,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * @auther: denghb
- * @date: 2019-06-23 17:21
+ * SQL Highlight
+ *
+ * @author: denghb 2019-06-23 17:21
  */
 public class MultiLineSQLHighlighter implements Annotator {
 
@@ -34,6 +36,8 @@ public class MultiLineSQLHighlighter implements Annotator {
         KEYWORDS.addAll(Arrays.asList(" limit ", " like ", " case ", " when ", " else ", " end "));
 
         FUNCTIONS.addAll(Arrays.asList("count(", "sum(", "avg(", "min(", "max(", "avg(", "concat(", "date_format(", "date_sub(", "date_add(", "now("));
+
+        EditorActionManager.getInstance().getTypedAction().setupHandler(new MultiLineSQLSmartTipHandler());
     }
 
     @Override
