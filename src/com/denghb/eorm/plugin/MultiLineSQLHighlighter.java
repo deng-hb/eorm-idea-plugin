@@ -2,7 +2,6 @@ package com.denghb.eorm.plugin;
 
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.Annotator;
-import com.intellij.openapi.editor.actionSystem.EditorActionManager;
 import com.intellij.openapi.editor.markup.TextAttributes;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.PsiElement;
@@ -37,7 +36,7 @@ public class MultiLineSQLHighlighter implements Annotator {
 
         FUNCTIONS.addAll(Arrays.asList("count(", "sum(", "avg(", "min(", "max(", "avg(", "concat(", "date_format(", "date_sub(", "date_add(", "now("));
 
-        EditorActionManager.getInstance().getTypedAction().setupHandler(new MultiLineSQLSmartTipHandler());
+//        EditorActionManager.getInstance().getTypedAction().setupHandler(new MultiLineSQLSmartTipHandler());
     }
 
     @Override
@@ -48,6 +47,7 @@ public class MultiLineSQLHighlighter implements Annotator {
 
             int originStart = psiElement.getNode().getTextRange().getStartOffset();
 
+            code = code.toLowerCase();
             // /*{}*/
             annotationHolder.createInfoAnnotation(new TextRange(originStart + 3, originStart + 3 + code.length() - 6), null).setEnforcedTextAttributes(DEFAULT_TEXT_ATTR);
 
