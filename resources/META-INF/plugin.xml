@@ -1,19 +1,19 @@
 <idea-plugin>
-  <id>com.denghb.eorm.plugin</id>
-  <name>EOrm</name>
-  <version>1.0.1</version>
-  <vendor email="i@denghb.com" url="https://github.com/deng-hb/eorm-idea-plugin">denghb</vendor>
+    <id>com.denghb.eorm.plugin</id>
+    <name>EOrm</name>
+    <version>1.0.1</version>
+    <vendor email="i@denghb.com" url="https://github.com/deng-hb/eorm-idea-plugin">denghb</vendor>
 
-  <description>
-    <![CDATA[
+    <description>
+        <![CDATA[
       <h2>EOrm plugin</h2>
       <p>Used for <a target="_blank" href="https://github.com/deng-hb/eorm-spring">EOrm-spring</a></p>
       <p>EOrm based spring-jdbc JdbcTemplate & NamedParameterJdbcTemplate a every every good ORM framework.</p>
     ]]>
-  </description>
+    </description>
 
-  <change-notes>
-    <![CDATA[
+    <change-notes>
+        <![CDATA[
       <h3>v1.0.1</h3>
       <p><a target="_blank" href="https://github.com/deng-hb/multi-line">Multi-line</a> SQL Highlight</p>
       <p>
@@ -26,23 +26,24 @@
         </pre>
       </p>
     ]]>
-  </change-notes>
+    </change-notes>
 
-  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="173.0"/>
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+    <idea-version since-build="173.0"/>
 
-  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-       on how to target different products -->
-  <!-- uncomment to enable plugin in all products -->
-  <depends>com.intellij.modules.lang</depends>
+    <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <!-- uncomment to enable plugin in all products -->
+    <depends>com.intellij.modules.lang</depends>
 
-  <extensions defaultExtensionNs="com.intellij">
-    <!-- Add your extensions here -->
-    <annotator language="JAVA" implementationClass="com.denghb.eorm.plugin.MultiLineSQLHighlighter"/>
-  </extensions>
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+        <annotator language="JAVA" implementationClass="com.denghb.eorm.plugin.MultiLineSQLHighlighter"/>
+        <typedHandler id="EOrm" implementation="com.denghb.eorm.plugin.MultiLineSQLSmartTipHandler"/>
+    </extensions>
 
-  <actions>
-    <!-- Add your actions here -->
-  </actions>
+    <actions>
+        <!-- Add your actions here -->
+    </actions>
 
 </idea-plugin>

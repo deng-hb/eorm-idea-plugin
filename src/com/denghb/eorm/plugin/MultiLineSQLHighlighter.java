@@ -13,8 +13,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * @auther: denghb
- * @date: 2019-06-23 17:21
+ * SQL Highlight
+ *
+ * @author: denghb 2019-06-23 17:21
  */
 public class MultiLineSQLHighlighter implements Annotator {
 
@@ -34,6 +35,8 @@ public class MultiLineSQLHighlighter implements Annotator {
         KEYWORDS.addAll(Arrays.asList(" limit ", " like ", " case ", " when ", " else ", " end "));
 
         FUNCTIONS.addAll(Arrays.asList("count(", "sum(", "avg(", "min(", "max(", "avg(", "concat(", "date_format(", "date_sub(", "date_add(", "now("));
+
+//        EditorActionManager.getInstance().getTypedAction().setupHandler(new MultiLineSQLSmartTipHandler());
     }
 
     @Override
@@ -44,6 +47,7 @@ public class MultiLineSQLHighlighter implements Annotator {
 
             int originStart = psiElement.getNode().getTextRange().getStartOffset();
 
+            code = code.toLowerCase();
             // /*{}*/
             annotationHolder.createInfoAnnotation(new TextRange(originStart + 3, originStart + 3 + code.length() - 6), null).setEnforcedTextAttributes(DEFAULT_TEXT_ATTR);
 
