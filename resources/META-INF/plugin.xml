@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.denghb.eorm.plugin</id>
     <name>EOrm</name>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <vendor email="i@denghb.com" url="https://github.com/deng-hb/eorm-idea-plugin">denghb</vendor>
 
     <description>
@@ -14,17 +14,37 @@
 
     <change-notes>
         <![CDATA[
-      <h3>v1.0.1</h3>
-      <p><a target="_blank" href="https://github.com/deng-hb/multi-line">Multi-line</a> SQL Highlight</p>
-      <p>
-        <pre>
+        <h3>v1.0.2</h3>
+        <p>SQL Smart Tip</p>
+        <h5>step 1:</h5>
+        <p>Create name <code>eorm.config</code> file to Project root path</p>
+        <h5>step 2:</h5>
+        <p>Write your MySQL connect info</p>
+        <p>
+<pre>
 <code style="color:#203DBF">
-<span style="color:#333">String sql = </span>""<span style="color:#aaa">/*{</span>
-  <span style="color:#008000">select</span> * <span style="color:#008000">from</span> tb_user
-<span style="color:#aaa">}*/</span><span style="color:#333">;</span>
+<span style="color:#333">host=</span>localhost
+<span style="color:#333">port=</span>3306
+<span style="color:#333">database=</span>test
+<span style="color:#333">username=</span>root
+<span style="color:#333">password=</span>123
 </code>
-        </pre>
-      </p>
+</pre>
+        </p>
+        <h5>done</h5>
+        <img src="http://static.denghb.com/eorm-smart-tip.gif" />
+
+        <h3>v1.0.1</h3>
+        <p><a target="_blank" href="https://github.com/deng-hb/multi-line">Multi-line</a> SQL Highlight</p>
+        <p>
+<pre>
+<code style="color:#203DBF">
+<span style="color:#333">String sql = </span>""<span style="color:#999">/*{</span>
+  <span style="color:#008000">select</span> * <span style="color:#008000">from</span> tb_user
+<span style="color:#999">}*/</span><span style="color:#333">;</span>
+</code>
+</pre>
+        </p>
     ]]>
     </change-notes>
 
