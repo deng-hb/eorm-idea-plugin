@@ -19,6 +19,8 @@ password=
 </code>
 </pre>
 </p>
+<h5>done</h5>
+<img src="https://raw.githubusercontent.com/deng-hb/eorm-idea-plugin/master/eorm-smart-tip.gif" />
 
 <h3>v1.0.1</h3>
 <p><a target="_blank" href="https://github.com/deng-hb/multi-line">Multi-line</a> SQL Highlight</p>
