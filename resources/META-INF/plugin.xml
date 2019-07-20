@@ -1,19 +1,24 @@
 <idea-plugin>
     <id>com.denghb.eorm.plugin</id>
-    <name>EOrm</name>
-    <version>1.0.2</version>
-    <vendor email="i@denghb.com" url="https://github.com/deng-hb/eorm-idea-plugin">denghb</vendor>
+    <name>Eorm</name>
+    <version>1.0.3</version>
+    <vendor email="i@denghb.com" url="https://github.com/deng-hb/eorm-idea-plugin">eorm-idea-plugin</vendor>
 
     <description>
         <![CDATA[
-      <h2>EOrm plugin</h2>
-      <p>Used for <a target="_blank" href="https://github.com/deng-hb/eorm-spring">EOrm-spring</a></p>
-      <p>EOrm based spring-jdbc JdbcTemplate & NamedParameterJdbcTemplate a every every good ORM framework.</p>
+      <h2>Eorm plugin</h2>
+      <p>Used for <a target="_blank" href="https://github.com/deng-hb/eorm-spring">Eorm-spring</a></p>
+      <p>Eorm based spring-jdbc JdbcTemplate & NamedParameterJdbcTemplate a every every good ORM framework.</p>
     ]]>
     </description>
 
     <change-notes>
         <![CDATA[
+        <h3>v1.0.3</h3>
+        <ul>
+            <li>add smart tip table name </li>
+            <li>add `(`,`)`,`#if`,`#elseIf`,`#else`,`#end`.. keywords highlight</li>
+        </ul>
         <h3>v1.0.2</h3>
         <p>SQL Smart Tip</p>
         <h5>step 1:</h5>
@@ -59,7 +64,7 @@
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
         <annotator language="JAVA" implementationClass="com.denghb.eorm.plugin.MultiLineSQLHighlighter"/>
-        <typedHandler id="EOrm" implementation="com.denghb.eorm.plugin.MultiLineSQLSmartTipHandler"/>
+        <typedHandler id="Eorm" implementation="com.denghb.eorm.plugin.MultiLineSQLSmartTipHandler"/>
     </extensions>
 
     <actions>

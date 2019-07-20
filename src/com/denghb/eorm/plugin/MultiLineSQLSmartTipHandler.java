@@ -18,33 +18,53 @@ import java.io.FileInputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Properties;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * @author denghb 2019-06-27 00:16
+ * SQL智能提示
+ *
+ * <pre>
+ *     1、点`.`后面会提示别名对应表字段
+ *     2、空格` `在`from`和`join`后面会提示表名
+ * </pre>
+ *
+ * @author denghb
+ * @since 2019-06-27 00:16
  */
 public class MultiLineSQLSmartTipHandler extends TypedHandlerDelegate {
 
     private static final String EORM_CONFIG = "eorm.config";
     private static final String DB_URL = "jdbc:mysql://%s:%s/%s?useUnicode=true&amp;characterEncoding=utf-8";
-    private static final String sql1 = "SELECT column_name,column_type,column_comment FROM information_schema.COLUMNS WHERE table_schema = ? AND table_name = ? ";
+    private static final String SQL_TABLE = "select table_name, table_comment from information_schema.tables where table_schema = ?";
+    private static final String SQL_COLUMN = "select column_name, column_type, column_comment from information_schema.columns where table_schema = ? and table_name = ? ";
 
-    private Eorm db;
-    private String schema;
-    private Connection connection;
+    private static final List<Table> DATA_TABLES = new Vector<Table>();
+    private static final Map<String, List<Column>> DATA_COLUMNS = new ConcurrentHashMap<String, List<Column>>();
+
+    private String projectPath;
 
     public MultiLineSQLSmartTipHandler() {
-        System.out.println("MultiLineSQLSmartTipHandler init");
+        outLog("MultiLineSQLSmartTipHandler init");
     }
 
     @NotNull
     @Override
     public Result beforeCharTyped(char c, @NotNull Project project, @NotNull Editor editor, @NotNull PsiFile file, @NotNull FileType fileType) {
-        if (EORM_CONFIG.equals(file.getName())) {
-            close();
+
+        if (null == projectPath) {
+            projectPath = project.getBasePath();
+            outLog("projectPath init");
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                public void run() {
+                    loadTableColumns();// 定时更新
+                }
+            }, 0, 60 * 1000);// 每隔60秒执行一次
         }
-        if ('.' != c) {
+
+        if ('.' != c && ' ' != c) {
             return super.beforeCharTyped(c, project, editor, file, fileType);
         }
 
@@ -52,7 +72,7 @@ public class MultiLineSQLSmartTipHandler extends TypedHandlerDelegate {
         int caretOffset = editor.getCaretModel().getOffset();
 
         String text = document.getText();
-        String sql = getSql(caretOffset, text);
+        String sql = getEOrmSQL(caretOffset, text);
         if (null == sql) {
             return super.beforeCharTyped(c, project, editor, file, fileType);
         }
@@ -60,41 +80,95 @@ public class MultiLineSQLSmartTipHandler extends TypedHandlerDelegate {
         document.insertString(caretOffset, String.valueOf(c));
         editor.getCaretModel().moveToOffset(caretOffset + 1);
 
-        // 获取表名
-        String tableName = getTableName(caretOffset, text, sql);
-        if (null != tableName) {
+        if (' ' == c && nextKeyInTable(caretOffset, text) && !DATA_TABLES.isEmpty()) {
 
-            conn(project.getBasePath());
-
-            if (null == db) {
-                return Result.STOP;
-            }
-
-            List<Column> columns = db.select(Column.class, sql1, schema, tableName);
-            if (null == columns || columns.isEmpty()) {
-                return Result.STOP;
-            }
-            LookupElement[] lookupElement = new LookupElement[columns.size()];
+            // 显示提示内容
+            LookupElement[] lookupElement = new LookupElement[DATA_TABLES.size()];
             for (int i = 0; i < lookupElement.length; i++) {
-                Column column = columns.get(i);
-                lookupElement[i] = LookupElementBuilder.create(column.getColumnName())
-                        .withTailText(" " + column.getColumnComment(), true)
-                        .withTypeText(column.getColumnType());
+                Table table = DATA_TABLES.get(i);
+                lookupElement[i] = LookupElementBuilder.create(table.getTableName())
+                        .withTypeText(table.getTableComment(), true);
             }
             LookupManager.getInstance(project).showLookup(editor, lookupElement);
+            return Result.STOP;
         }
+
+        if ('.' != c) {
+            return Result.STOP;
+        }
+
+        // 获取表名
+        String tableName = getTableName(caretOffset, text, sql);
+        if (null == tableName) {
+            return Result.STOP;
+        }
+
+        // 显示提示内容
+        List<Column> columns = DATA_COLUMNS.get(tableName);
+        if (null == columns || columns.isEmpty()) {
+            return Result.STOP;
+        }
+        LookupElement[] lookupElement = new LookupElement[columns.size()];
+        for (int i = 0; i < lookupElement.length; i++) {
+            Column column = columns.get(i);
+            lookupElement[i] = LookupElementBuilder.create(column.getColumnName())
+                    .withTailText(" " + column.getColumnComment(), true)
+                    .withTypeText(column.getColumnType());
+        }
+        LookupManager.getInstance(project).showLookup(editor, lookupElement);
 
         return Result.STOP;
     }
 
-
-    private void conn(String basePath) {
-
-        try {
-            if (null != db) {
-                return;
+    private boolean nextKeyInTable(int caretOffset, String text) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = caretOffset; i > 0; i--) {
+            char c = text.charAt(i);
+            if ('\n' == c) {
+                continue;
             }
-            File file1 = new File(basePath + "/" + EORM_CONFIG);
+            if (' ' == c) {
+                if (sb.length() > 0) {
+                    break;
+                } else {
+                    continue;
+                }
+            }
+            sb.append(c);
+        }
+        sb.reverse();// 翻转
+
+        // ？还有很多情况是要输入表名
+        String s = sb.toString();
+        if ("join".equalsIgnoreCase(s) || "from".equalsIgnoreCase(s)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private void outLog(String log) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
+        System.out.println(sdf.format(new Date()) + ":" + log);
+
+    }
+
+    private void outLog(Exception e) {
+        outLog(e.getMessage());
+        e.printStackTrace();
+    }
+
+
+    private void loadTableColumns() {
+        outLog("start");
+        if (null == projectPath) {
+            outLog("projectPath is null");
+            return;
+        }
+
+        Connection connection = null;
+        try {
+            File file1 = new File(projectPath + "/" + EORM_CONFIG);
             if (!file1.exists()) {
                 return;
             }
@@ -103,42 +177,54 @@ public class MultiLineSQLSmartTipHandler extends TypedHandlerDelegate {
             properties.load(is);
             is.close();
 
-            String username = properties.getProperty("username");
-            String password = properties.getProperty("password");
-            String port = properties.getProperty("port");
-            String host = properties.getProperty("host");
-            String database = properties.getProperty("database");
+            String username = getProperty(properties, "username");
+            String password = getProperty(properties, "password");
+            String port = getProperty(properties, "port");
+            String host = getProperty(properties, "host");
+            String database = getProperty(properties, "database");
 
-            schema = database;
             String url = String.format(DB_URL, host, port, database);
             // 注册 JDBC 驱动
             Class.forName("com.mysql.jdbc.Driver");
             connection = DriverManager.getConnection(url, username, password);
+            Eorm db = new EormImpl(connection);
 
-            db = new EormImpl(connection);
+            List<Table> tables = db.select(Table.class, SQL_TABLE, database);
+            if (null != tables && !tables.isEmpty()) {
+                DATA_TABLES.clear();
 
-            System.out.println("Connected");
+                for (Table table : tables) {
+                    DATA_TABLES.add(table);
+                    String tableName = table.getTableName();
+                    List<Column> columns = db.select(Column.class, SQL_COLUMN, database, tableName);
+                    DATA_COLUMNS.put(tableName, columns);
+                }
+            }
+
+            outLog("end DATA_TABLES:" + DATA_TABLES.size());
         } catch (Exception e) {
-            e.printStackTrace();
-            close();
-        }
-    }
-
-    private void close() {
-        if (null != db) {
-            db = null;
-        }
-        if (null != connection) {
+            outLog(e);
+        } finally {
             try {
-                connection.close();
-                connection = null;
+                if (null != connection) {
+                    connection.close();
+                    connection = null;
+                }
             } catch (SQLException ex) {
 
             }
         }
     }
 
-    private String getSql(int caretOffset, String text) {
+    private String getProperty(Properties properties, String key) {
+        String value = properties.getProperty(key);
+        if (null != value) {
+            value = value.trim();
+        }
+        return value;
+    }
+
+    private String getEOrmSQL(int caretOffset, String text) {
         if (!text.contains("\"\"/*{") || !text.contains("}*/;")) {
             return null;
         }
@@ -224,13 +310,44 @@ public class MultiLineSQLSmartTipHandler extends TypedHandlerDelegate {
         return alias;
     }
 
+    public static class Table {
+
+        private String tableName;
+
+        private String tableComment;
+
+        public String getTableName() {
+            return tableName;
+        }
+
+        public void setTableName(String tableName) {
+            this.tableName = tableName;
+        }
+
+        public String getTableComment() {
+            return tableComment;
+        }
+
+        public void setTableComment(String tableComment) {
+            this.tableComment = tableComment;
+        }
+
+        @Override
+        public String toString() {
+            return "Table{" +
+                    "tableName='" + tableName + '\'' +
+                    ", tableComment='" + tableComment + '\'' +
+                    '}';
+        }
+    }
+
     public static class Column {
 
-        public String columnName;
+        private String columnName;
 
-        public String columnType;
+        private String columnType;
 
-        public String columnComment;
+        private String columnComment;
 
         public String getColumnName() {
             return columnName;

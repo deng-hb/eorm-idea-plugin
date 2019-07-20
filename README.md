@@ -1,8 +1,14 @@
-## EOrm idea plugin
-<p>Used for <a target="_blank" href="https://github.com/deng-hb/eorm-spring">EOrm-spring</a></p>
-<p>EOrm based spring-jdbc JdbcTemplate & NamedParameterJdbcTemplate a every every good ORM framework.</p>
+## Eorm idea plugin
+<p>Used for <a target="_blank" href="https://github.com/deng-hb/eorm-spring">Eorm-spring</a></p>
+<p>Eorm based spring-jdbc JdbcTemplate & NamedParameterJdbcTemplate a every every good ORM framework.</p>
 
 ### Changelog
+<h3>v1.0.3</h3>
+<ul>
+<li>add smart tip table name </li>
+<li>add `(`,`)`,`#if`,`#elseIf`,`#else`,`#end`.. keywords highlight</li>
+</ul>
+
 <h3>v1.0.2</h3>
 <p>SQL Smart Tip</p>
 <h5>step 1:</h5>
