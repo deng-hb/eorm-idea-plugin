@@ -20,32 +20,23 @@ import java.util.Set;
  */
 public class MultiLineSQLHighlighter implements Annotator {
 
-    private static TextAttributes DEFAULT_TEXT_ATTR = new TextAttributes(new Color(0, 61, 191), null, null, null, Font.TRUETYPE_FONT);
-    private static TextAttributes KEYWORD_TEXT_ATTR = new TextAttributes(new Color(0, 128, 0), null, null, null, Font.TRUETYPE_FONT);
-    private static TextAttributes FUNCTION_TEXT_ATTR = new TextAttributes(new Color(255, 128, 0), null, null, null, Font.TRUETYPE_FONT);
+    private static TextAttributes TEXT_ATTR_DEFAULT = new TextAttributes(new Color(0, 61, 191), null, null, null, Font.TRUETYPE_FONT);
+    private static TextAttributes TEXT_ATTR_KEYWORD = new TextAttributes(new Color(0, 128, 0), null, null, null, Font.TRUETYPE_FONT);
+    private static TextAttributes TEXT_ATTR_FUNCTION = new TextAttributes(new Color(255, 128, 0), null, null, null, Font.TRUETYPE_FONT);
 
-    private static TextAttributes EXPRESSION_TEXT_ATTR = new TextAttributes(new Color(200, 67, 109), null, null, null, Font.TRUETYPE_FONT);
-    private static TextAttributes BRACKET_TEXT_ATTR = new TextAttributes(new Color(0, 115, 191), null, null, null, Font.TRUETYPE_FONT);
-    private static TextAttributes VARCHAR_TEXT_ATTR = new TextAttributes(new Color(195, 43, 24), null, null, null, Font.TRUETYPE_FONT);
+    private static TextAttributes TEXT_ATTR_EXPRESSION = new TextAttributes(new Color(200, 67, 109), null, null, null, Font.TRUETYPE_FONT);
+    private static TextAttributes TEXT_ATTR_SYMBOL = new TextAttributes(new Color(128, 128, 128), null, null, null, Font.TRUETYPE_FONT);
+    private static TextAttributes TEXT_ATTR_VARCHAR = new TextAttributes(new Color(195, 43, 24), null, null, null, Font.TRUETYPE_FONT);
 
-    private static TextAttributes COMMA_TEXT_ATTR = new TextAttributes(new Color(128, 128, 128), null, null, null, Font.TRUETYPE_FONT);
+    // MySQL所有关键字
+    private static final String ALL_KEYWORDS = ",ADD,ALL,ALTER,ANALYZE,AND,AS,ASC,ASENSITIVE,BEFORE,BETWEEN,BIGINT,BINARY,BLOB,BOTH,BY,CALL,CASCADE,CASE,CHANGE,CHAR,CHARACTER,CHECK,COLLATE,COLUMN,CONDITION,CONNECTION,CONSTRAINT,CONTINUE,CONVERT,CREATE,CROSS,CURRENT_DATE,CURRENT_TIME,CURRENT_TIMESTAMP,CURRENT_USER,CURSOR,DATABASE,DATABASES,DAY_HOUR,DAY_MICROSECOND,DAY_MINUTE,DAY_SECOND,DEC,DECIMAL,DECLARE,DEFAULT,DELAYED,DELETE,DESC,DESCRIBE,DETERMINISTIC,DISTINCT,DISTINCTROW,DIV,DOUBLE,DROP,DUAL,EACH,ELSE,ELSEIF,END,ENCLOSED,ESCAPED,EXISTS,EXIT,EXPLAIN,FALSE,FETCH,FLOAT,FLOAT4,FLOAT8,FOR,FORCE,FOREIGN,FROM,FULLTEXT,GOTO,GRANT,GROUP,HAVING,HIGH_PRIORITY,HOUR_MICROSECOND,HOUR_MINUTE,HOUR_SECOND,IF,IGNORE,IN,INDEX,INFILE,INNER,INOUT,INSENSITIVE,INSERT,INT,INT1,INT2,INT3,INT4,INT8,INTEGER,INTERVAL,INTO,IS,ITERATE,JOIN,KEY,KEYS,KILL,LABEL,LEADING,LEAVE,LEFT,LIKE,LIMIT,LINEAR,LINES,LOAD,LOCALTIME,LOCALTIMESTAMP,LOCK,LONG,LONGBLOB,LONGTEXT,LOOP,LOW_PRIORITY,MATCH,MEDIUMBLOB,MEDIUMINT,MEDIUMTEXT,MIDDLEINT,MINUTE_MICROSECOND,MINUTE_SECOND,MOD,MODIFIES,NATURAL,NOT,NO_WRITE_TO_BINLOG,NULL,NUMERIC,ON,OPTIMIZE,OPTION,OPTIONALLY,OR,ORDER,OUT,OUTER,OUTFILE,PRECISION,PRIMARY,PROCEDURE,PURGE,RAID0,RANGE,READ,READS,REAL,REFERENCES,REGEXP,RELEASE,RENAME,REPEAT,REPLACE,REQUIRE,RESTRICT,RETURN,REVOKE,RIGHT,RLIKE,SCHEMA,SCHEMAS,SECOND_MICROSECOND,SELECT,SENSITIVE,SEPARATOR,SET,SHOW,SMALLINT,SPATIAL,SPECIFIC,SQL,SQLEXCEPTION,SQLSTATE,SQLWARNING,SQL_BIG_RESULT,SQL_CALC_FOUND_ROWS,SQL_SMALL_RESULT,SSL,STARTING,STRAIGHT_JOIN,TABLE,TERMINATED,THEN,TINYBLOB,TINYINT,TINYTEXT,TO,TRAILING,TRIGGER,TRUE,UNDO,UNION,UNIQUE,UNLOCK,UNSIGNED,UPDATE,USAGE,USE,USING,UTC_DATE,UTC_TIME,UTC_TIMESTAMP,VALUES,VARBINARY,VARCHAR,VARCHARACTER,VARYING,WHEN,WHERE,WHILE,WITH,WRITE,X509,XOR,YEAR_MONTH,ZEROFILL,";
 
-    private static Set<String> KEYWORDS = new HashSet<String>();
-    private static Set<String> FUNCTIONS = new HashSet<String>();
-    private static Set<String> EXPRESSIONS = new HashSet<String>();
+    private static final String ALL_FUNCTION = "(ASCII(CHAR_LENGTH(CHARACTER_LENGTH(CONCAT(CONCAT_WS(FIELD(FIND_IN_SET(FORMAT(INSERT(LOCATE(LCASE(LEFT(LOWER(LPAD(LTRIM(MID(POSITION(REPEAT(REPLACE(REVERSE(RIGHT(RPAD(RTRIM(SPACE(STRCMP(SUBSTR(SUBSTRING(SUBSTRING_INDEX(TRIM(UCASE(UPPER(ABS(ACOS(ASIN(ATAN(ATAN2(AVG(CEIL(CEILING(COS(COT(COUNT(DEGREES(EXP(FLOOR(GREATEST(LEAST(LN(LOG(LOG10(LOG2(MAX(MIN(MOD(PI(POW(POWER(RADIANS(RAND(ROUND(SIGN(SIN(SQRT(SUM(TAN(TRUNCATE(ADDDATE(ADDTIME(CURDATE(CURRENT_DATE(CURRENT_TIME(CURRENT_TIMESTAMP(CURTIME(DATE(DATEDIFF(DATE_ADD(DATE_FORMAT(DATE_SUB(DAY(DAYNAME(DAYOFMONTH(DAYOFWEEK(DAYOFYEAR(EXTRACT(FROM_DAYS(HOUR(LAST_DAY(LOCALTIME(LOCALTIMESTAMP(MAKEDATE(MAKETIME(MICROSECOND(MINUTE(MONTHNAME(MONTH(NOW(PERIOD_ADD(PERIOD_DIFF(QUARTER(SECOND(SEC_TO_TIME(STR_TO_DATE(SUBDATE(SUBTIME(SYSDATE(TIME(TIME_FORMAT(TIME_TO_SEC(TIMEDIFF(TIMESTAMP(TO_DAYS(WEEK(WEEKDAY(WEEKOFYEAR(YEAR(YEARWEEK(BIN(BINARY(CAST(COALESCE(CONNECTION_ID(CONV(CONVERT(CURRENT_USER(DATABASE(IF(IFNULL(ISNULL(LAST_INSERT_ID(NULLIF(SESSION_USER(SYSTEM_USER(USER(VERSION(";
 
-    static {
-        // TODO 可能列得不全
-        KEYWORDS.addAll(Arrays.asList("select ", "update ", "create ", "delete ", "truncate ", "insert ", " into ", " values ", " set "));
-        KEYWORDS.addAll(Arrays.asList(" from ", " on ", " by ", " where ", " left ", " inner ", " join ", " right ", " as ", " group ", " order ", " having ", " distinct "));
-        KEYWORDS.addAll(Arrays.asList(" and ", " or ", " > ", " < ", " <= ", " >= ", " = ", " != ", " not ", " desc", " asc", " between ", " union ", " is ", " null"));
-        KEYWORDS.addAll(Arrays.asList(" limit ", " like ", " case ", "(case", " when ", " then ", " else ", " end ", "end)"));
+    private static final String ALL_EXPRESSION = "#IF#ELSEIF#ELSE#END#";
 
-        FUNCTIONS.addAll(Arrays.asList("count(", "sum(", "avg(", "min(", "max(", "avg(", "concat(", "date_format(", "date_sub(", "date_add(", "now(", "curdate("));
-
-        EXPRESSIONS.addAll(Arrays.asList("#if", "#elseif", "#else", "#end"));
-
-    }
+    // 符号
+    private static final String ALL_SYMBOL = "=-*/><(),.%|&";
 
     @Override
     public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
@@ -56,64 +47,87 @@ public class MultiLineSQLHighlighter implements Annotator {
         }
         int originStart = psiElement.getNode().getTextRange().getStartOffset();
 
-        code = code.toLowerCase();
+        code = code.toUpperCase();
         // /*{}*/
-        annotationHolder.createInfoAnnotation(new TextRange(originStart + 3, originStart + 3 + code.length() - 6), null).setEnforcedTextAttributes(DEFAULT_TEXT_ATTR);
+        annotationHolder.createInfoAnnotation(new TextRange(originStart + 3, originStart + 3 + code.length() - 6), null)
+                .setEnforcedTextAttributes(TEXT_ATTR_DEFAULT);
 
-        for (String keyword : KEYWORDS) {
-            doColor(originStart, code, keyword, annotationHolder, KEYWORD_TEXT_ATTR);
-        }
+        StringBuilder sb = new StringBuilder();
+        int codeLength = code.length() - 2;
+        boolean singleQuote = false;
 
-        for (String function : FUNCTIONS) {
-            doColor(originStart, code, function, annotationHolder, FUNCTION_TEXT_ATTR);
-        }
-
-        for (String expression : EXPRESSIONS) {
-            doColor(originStart, code, expression, annotationHolder, EXPRESSION_TEXT_ATTR);
-        }
-        // 字符串红色
-        int nextStart = -1;
-        for (int i = 0; i < code.length(); i++) {
+        for (int i = 3; i < codeLength; i++) {
             char c = code.charAt(i);
-            if ('(' == c || ')' == c) {
-                int start = originStart + i;
-                TextRange textRange = new TextRange(start, start + 1);
-                annotationHolder.createInfoAnnotation(textRange, null).setEnforcedTextAttributes(BRACKET_TEXT_ATTR);
-            } else if (',' == c) {
-                int start = originStart + i;
-                TextRange textRange = new TextRange(start, start + 1);
-                annotationHolder.createInfoAnnotation(textRange, null).setEnforcedTextAttributes(COMMA_TEXT_ATTR);
-            }
+            if ((' ' == c || '\n' == c || '\r' == c || '\t' == c) && !singleQuote || i == codeLength - 1) {
+                if (sb.length() > 0) {
+                    // 是否关键字
+                    showColor(originStart, i, sb, annotationHolder);
+                    sb = new StringBuilder();
+                }
+            } else if (ALL_SYMBOL.contains(String.valueOf(c)) && !singleQuote) {
+                // 是否关键字
+                showColor(originStart, i, sb, annotationHolder);
+                //
+                sb = new StringBuilder();
+                sb.append(c);
+                showColor(originStart, i + 1, sb, annotationHolder);
+                sb = new StringBuilder();
+            } else if ('(' == c && sb.length() > 0) {
+                // 函数
+                showColor(originStart, i, sb, annotationHolder);
 
-            if ('\'' != c) {
-                continue;
-            }
+                // (
+                sb = new StringBuilder();
+                sb.append(c);
+                showColor(originStart, i + 1, sb, annotationHolder);
 
-            if (-1 == nextStart) {
-                nextStart = i;
+                sb = new StringBuilder();
+            } else if ('\\' == c && '\'' == code.charAt(i + 1)) {
+                // \' 转译
+                sb.append(c);
+                sb.append(code.charAt(i + 1));
+                i++;
             } else {
-                int start = originStart + nextStart;
-                TextRange textRange = new TextRange(start, start + (i - nextStart) + 1);
-                annotationHolder.createInfoAnnotation(textRange, null).setEnforcedTextAttributes(VARCHAR_TEXT_ATTR);
-                nextStart = -1;
+                sb.append(c);
+                if ('\'' == c) {
+                    singleQuote = !singleQuote;
+                    if (!singleQuote) {
+                        // 字符串
+                        showColor(originStart, i + 1, sb, annotationHolder);
+                        sb = new StringBuilder();
+                    }
+                }
             }
         }
-
-
 //        Notifications.Bus.notify(new Notification("", "", code, NotificationType.INFORMATION));
     }
 
-    private void doColor(int originStart, String code, String key, AnnotationHolder annotationHolder, TextAttributes textAttributes) {
-        int start = code.indexOf(key);
-        if (-1 == start) {
-            return;
+    private void showColor(int originStart, int i, StringBuilder sb, AnnotationHolder annotationHolder) {
+        System.out.println(sb);
+
+        int sbLength = sb.length();
+        int start = originStart + i - sbLength;
+        TextAttributes attributes = null;
+
+        if (sb.length() > 1) {
+            if (sb.indexOf("'") == 0) {
+                attributes = TEXT_ATTR_VARCHAR;
+            } else if (ALL_KEYWORDS.contains("," + sb + ",")) {
+                attributes = TEXT_ATTR_KEYWORD;
+            } else if (ALL_FUNCTION.contains("(" + sb)) {
+                attributes = TEXT_ATTR_FUNCTION;
+            } else if (ALL_EXPRESSION.contains(sb + "#")) {
+                attributes = TEXT_ATTR_EXPRESSION;
+            }
+        } else {
+            if (ALL_SYMBOL.contains(sb)) {
+                attributes = TEXT_ATTR_SYMBOL;
+            }
         }
-        int newStart = originStart + start;
-        int newEnd = newStart + key.length();
-        TextRange textRange = new TextRange(newStart, newEnd);
 
-        annotationHolder.createInfoAnnotation(textRange, null).setEnforcedTextAttributes(textAttributes);
-
-        doColor(newStart + key.length(), code.substring(start + key.length()), key, annotationHolder, textAttributes);
+        if (null != attributes) {
+            annotationHolder.createInfoAnnotation(new TextRange(start, start + sbLength), null).setEnforcedTextAttributes(attributes);
+        }
     }
+
 }
