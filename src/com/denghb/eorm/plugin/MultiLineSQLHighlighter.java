@@ -8,9 +8,6 @@ import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * SQL Highlight
@@ -36,13 +33,13 @@ public class MultiLineSQLHighlighter implements Annotator {
     private static final String ALL_EXPRESSION = "#IF#ELSEIF#ELSE#END#";
 
     // 符号
-    private static final String ALL_SYMBOL = "=-*/><(),.%|&";
+    private static final String ALL_SYMBOL = "=+-*/><(),.%|&?";
 
     @Override
     public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
 
         String code = psiElement.getText();
-        if (!code.startsWith("/*{")) {
+        if (!code.startsWith("/*{") && !code.endsWith("}*/")) {
             return;
         }
         int originStart = psiElement.getNode().getTextRange().getStartOffset();
@@ -54,21 +51,23 @@ public class MultiLineSQLHighlighter implements Annotator {
 
         StringBuilder sb = new StringBuilder();
         int codeLength = code.length() - 2;
-        boolean singleQuote = false;
+        boolean isString = false;
 
         for (int i = 3; i < codeLength; i++) {
             char c = code.charAt(i);
-            if ((' ' == c || '\n' == c || '\r' == c || '\t' == c) && !singleQuote || i == codeLength - 1) {
+            if ((' ' == c || '\n' == c || '\r' == c || '\t' == c) && !isString || i == codeLength - 1) {
                 if (sb.length() > 0) {
                     // 是否关键字
                     showColor(originStart, i, sb, annotationHolder);
                     sb = new StringBuilder();
                 }
-            } else if (ALL_SYMBOL.contains(String.valueOf(c)) && !singleQuote) {
-                // 是否关键字
-                showColor(originStart, i, sb, annotationHolder);
-                //
-                sb = new StringBuilder();
+            } else if (ALL_SYMBOL.contains(String.valueOf(c)) && !isString) {
+                if (sb.length() > 0) {
+                    // 是否关键字
+                    showColor(originStart, i, sb, annotationHolder);
+                    sb = new StringBuilder();
+                }
+                // 符号
                 sb.append(c);
                 showColor(originStart, i + 1, sb, annotationHolder);
                 sb = new StringBuilder();
@@ -90,8 +89,8 @@ public class MultiLineSQLHighlighter implements Annotator {
             } else {
                 sb.append(c);
                 if ('\'' == c) {
-                    singleQuote = !singleQuote;
-                    if (!singleQuote) {
+                    isString = !isString;
+                    if (!isString) {
                         // 字符串
                         showColor(originStart, i + 1, sb, annotationHolder);
                         sb = new StringBuilder();
@@ -103,14 +102,16 @@ public class MultiLineSQLHighlighter implements Annotator {
     }
 
     private void showColor(int originStart, int i, StringBuilder sb, AnnotationHolder annotationHolder) {
-        System.out.println(sb);
+        // System.out.println(sb);
 
         int sbLength = sb.length();
         int start = originStart + i - sbLength;
         TextAttributes attributes = null;
 
         if (sb.length() > 1) {
-            if (sb.indexOf("'") == 0) {
+            if (sb.indexOf(":") == 0) {
+                attributes = TEXT_ATTR_SYMBOL;
+            } else if (sb.indexOf("'") == 0) {
                 attributes = TEXT_ATTR_VARCHAR;
             } else if (ALL_KEYWORDS.contains("," + sb + ",")) {
                 attributes = TEXT_ATTR_KEYWORD;
