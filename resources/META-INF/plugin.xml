@@ -65,10 +65,15 @@
         <!-- Add your extensions here -->
         <annotator language="JAVA" implementationClass="com.denghb.eorm.plugin.MultiLineSQLHighlighter"/>
         <typedHandler id="Eorm" implementation="com.denghb.eorm.plugin.MultiLineSQLSmartTipHandler"/>
+<!--        <applicationConfigurable instance="com.denghb.eorm.plugin.MyConfigurable" id="MyConfigurable" />-->
+
     </extensions>
 
     <actions>
         <!-- Add your actions here -->
+        <action id="EormEntityGenerator" class="com.denghb.eorm.plugin.EormEntityGeneratorMenu" text="Eorm Entity Generator" >
+            <add-to-group group-id="CodeMenu" anchor="first"/>
+        </action>
     </actions>
 
 </idea-plugin>

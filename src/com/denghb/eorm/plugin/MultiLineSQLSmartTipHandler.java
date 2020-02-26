@@ -1,6 +1,8 @@
 package com.denghb.eorm.plugin;
 
 import com.denghb.eorm.Eorm;
+import com.denghb.eorm.generator.model.Column;
+import com.denghb.eorm.generator.model.Table;
 import com.denghb.eorm.impl.EormImpl;
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate;
 import com.intellij.codeInsight.lookup.LookupElement;
@@ -10,6 +12,9 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
+import com.intellij.openapi.wm.ToolWindowManager;
+import com.intellij.openapi.wm.WindowManager;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 
@@ -46,6 +51,10 @@ public class MultiLineSQLSmartTipHandler extends TypedHandlerDelegate {
     private String projectPath;
 
     public MultiLineSQLSmartTipHandler() {
+        WindowManager.getInstance();
+
+        Project[] projects = ProjectManager.getInstance().getOpenProjects();
+        Project project = ProjectManager.getInstance().getDefaultProject();
         outLog("MultiLineSQLSmartTipHandler init");
     }
 
@@ -53,6 +62,7 @@ public class MultiLineSQLSmartTipHandler extends TypedHandlerDelegate {
     @Override
     public Result beforeCharTyped(char c, @NotNull Project project, @NotNull Editor editor, @NotNull PsiFile file, @NotNull FileType fileType) {
 
+        outLog("@@@@" + project.getBasePath());
         if (null == projectPath) {
             projectPath = project.getBasePath();
             outLog("projectPath init");
@@ -310,76 +320,5 @@ public class MultiLineSQLSmartTipHandler extends TypedHandlerDelegate {
         return alias;
     }
 
-    public static class Table {
 
-        private String tableName;
-
-        private String tableComment;
-
-        public String getTableName() {
-            return tableName;
-        }
-
-        public void setTableName(String tableName) {
-            this.tableName = tableName;
-        }
-
-        public String getTableComment() {
-            return tableComment;
-        }
-
-        public void setTableComment(String tableComment) {
-            this.tableComment = tableComment;
-        }
-
-        @Override
-        public String toString() {
-            return "Table{" +
-                    "tableName='" + tableName + '\'' +
-                    ", tableComment='" + tableComment + '\'' +
-                    '}';
-        }
-    }
-
-    public static class Column {
-
-        private String columnName;
-
-        private String columnType;
-
-        private String columnComment;
-
-        public String getColumnName() {
-            return columnName;
-        }
-
-        public void setColumnName(String columnName) {
-            this.columnName = columnName;
-        }
-
-        public String getColumnType() {
-            return columnType;
-        }
-
-        public void setColumnType(String columnType) {
-            this.columnType = columnType;
-        }
-
-        public String getColumnComment() {
-            return columnComment;
-        }
-
-        public void setColumnComment(String columnComment) {
-            this.columnComment = columnComment;
-        }
-
-        @Override
-        public String toString() {
-            return "Column{" +
-                    "columnName='" + columnName + '\'' +
-                    ", columnType='" + columnType + '\'' +
-                    ", columnComment='" + columnComment + '\'' +
-                    '}';
-        }
-    }
 }
