@@ -272,42 +272,4 @@ public class EntityGeneratorDialog extends JDialog {
     public void setEntityGeneratorHandler(EntityGeneratorHandler entityGeneratorHandler) {
         this.entityGeneratorHandler = entityGeneratorHandler;
     }
-
-    public static void main(String[] args) {
-
-        String packageName = "com.denghb.eorm.generator.model";
-
-        Map<String, String> packageNamePath = new HashMap<>();
-        packageNamePath.put(packageName, "/Users/mac/IdeaProjects/eorm-idea-plugin/src/com/denghb/eorm/generator/model");
-
-        Config config = new Config();
-        config.setJdbc("jdbc:mysql://10.113.31.231:3406/ppdai_xyg_credit?user=root&password=Abcd@1234&useUnicode=true&characterEncoding=utf8");
-        config.setAuthor(System.getProperties().getProperty("user.name"));
-        config.setPackageName(packageName);
-        config.setPackageNamePath(packageNamePath);
-
-        EntityGeneratorDialog dialog = new EntityGeneratorDialog(config);
-        dialog.setSize(580, 350);
-        dialog.setAlwaysOnTop(true);
-        //dialog.setResizable(false);
-//        dialog.setModal(true);
-        dialog.setLocationRelativeTo(null);
-        dialog.setVisible(true);
-        dialog.requestFocus();
-        dialog.setEntityGeneratorHandler(new EntityGeneratorHandler() {
-            @Override
-            public void onCallback(List<TableModel> data, Config config) {
-
-                String generateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-                for (TableModel table : data) {
-                    if (table.isChecked()) {
-                        EntityGeneratorCode.doExec(table, config, generateTime);
-                    }
-                }
-            }
-        });
-
-        //System.exit(0);
-    }
-
 }
