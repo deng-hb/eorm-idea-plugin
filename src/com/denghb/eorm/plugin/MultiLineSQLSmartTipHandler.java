@@ -1,30 +1,27 @@
 package com.denghb.eorm.plugin;
 
-import com.denghb.eorm.Eorm;
+import com.denghb.eorm.generator.Config;
+import com.denghb.eorm.generator.Consts;
 import com.denghb.eorm.generator.model.ColumnModel;
 import com.denghb.eorm.generator.model.TableModel;
-import com.denghb.eorm.impl.EormImpl;
+import com.denghb.eorm.provider.TableDataCallback;
+import com.denghb.eorm.provider.TableDataProvider;
+import com.google.gson.Gson;
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.codeInsight.lookup.LookupManager;
+import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
-import com.intellij.openapi.wm.WindowManager;
 import com.intellij.psi.PsiFile;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * SQL智能提示
@@ -39,21 +36,11 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class MultiLineSQLSmartTipHandler extends TypedHandlerDelegate {
 
-    private static final String EORM_CONFIG = "eorm.config";
-    private static final String DB_URL = "jdbc:mysql://%s:%s/%s?useUnicode=true&amp;characterEncoding=utf-8";
-    private static final String SQL_TABLE = "select table_name, table_comment from information_schema.tables where table_schema = ?";
-    private static final String SQL_COLUMN = "select column_name, column_type, column_comment from information_schema.columns where table_schema = ? and table_name = ? ";
-
-    private static final List<TableModel> DATA_TABLES = new Vector<TableModel>();
-    private static final Map<String, List<ColumnModel>> DATA_COLUMNS = new ConcurrentHashMap<String, List<ColumnModel>>();
+    private static final List<TableModel> DATA_TABLES = new ArrayList<TableModel>();
 
     private String projectPath;
 
     public MultiLineSQLSmartTipHandler() {
-        WindowManager.getInstance();
-
-        Project[] projects = ProjectManager.getInstance().getOpenProjects();
-        Project project = ProjectManager.getInstance().getDefaultProject();
         outLog("MultiLineSQLSmartTipHandler init");
     }
 
@@ -61,7 +48,6 @@ public class MultiLineSQLSmartTipHandler extends TypedHandlerDelegate {
     @Override
     public Result beforeCharTyped(char c, @NotNull Project project, @NotNull Editor editor, @NotNull PsiFile file, @NotNull FileType fileType) {
 
-        outLog("@@@@" + project.getBasePath());
         if (null == projectPath) {
             projectPath = project.getBasePath();
             outLog("projectPath init");
@@ -70,7 +56,7 @@ public class MultiLineSQLSmartTipHandler extends TypedHandlerDelegate {
                 public void run() {
                     loadTableColumns();// 定时更新
                 }
-            }, 0, 60 * 1000);// 每隔60秒执行一次
+            }, 0, 60 * 1000);
         }
 
         if ('.' != c && ' ' != c) {
@@ -81,7 +67,7 @@ public class MultiLineSQLSmartTipHandler extends TypedHandlerDelegate {
         int caretOffset = editor.getCaretModel().getOffset();
 
         String text = document.getText();
-        String sql = getEOrmSQL(caretOffset, text);
+        String sql = getEormSQL(caretOffset, text);
         if (null == sql) {
             return super.beforeCharTyped(c, project, editor, file, fileType);
         }
@@ -111,9 +97,14 @@ public class MultiLineSQLSmartTipHandler extends TypedHandlerDelegate {
         if (null == tableName) {
             return Result.STOP;
         }
-
         // 显示提示内容
-        List<ColumnModel> columns = DATA_COLUMNS.get(tableName);
+        List<ColumnModel> columns = null;
+
+        for (TableModel table : DATA_TABLES) {
+            if (tableName.equalsIgnoreCase(table.getTableName())) {
+                columns = table.getColumns();
+            }
+        }
         if (null == columns || columns.isEmpty()) {
             return Result.STOP;
         }
@@ -127,6 +118,23 @@ public class MultiLineSQLSmartTipHandler extends TypedHandlerDelegate {
         LookupManager.getInstance(project).showLookup(editor, lookupElement);
 
         return Result.STOP;
+    }
+
+    private void loadTableColumns() {
+
+        PropertiesComponent pc = PropertiesComponent.getInstance();
+        String keyConfig = DigestUtils.md5Hex(projectPath) + Consts.GENERATOR_CONFIG;
+        Config config = new Gson().fromJson(pc.getValue(keyConfig), Config.class);
+        if (null != config) {
+            TableDataProvider.load(config.getJdbc(), new TableDataCallback() {
+                @Override
+                public void on(List<TableModel> tables) {
+                    DATA_TABLES.clear();
+                    DATA_TABLES.addAll(tables);
+                    System.out.println("tables init " + tables.size());
+                }
+            });
+        }
     }
 
     private boolean nextKeyInTable(int caretOffset, String text) {
@@ -167,73 +175,7 @@ public class MultiLineSQLSmartTipHandler extends TypedHandlerDelegate {
         e.printStackTrace();
     }
 
-
-    private void loadTableColumns() {
-        outLog("start");
-        if (null == projectPath) {
-            outLog("projectPath is null");
-            return;
-        }
-
-        Connection connection = null;
-        try {
-            File file1 = new File(projectPath + "/" + EORM_CONFIG);
-            if (!file1.exists()) {
-                return;
-            }
-            Properties properties = new Properties();
-            FileInputStream is = new FileInputStream(file1);
-            properties.load(is);
-            is.close();
-
-            String username = getProperty(properties, "username");
-            String password = getProperty(properties, "password");
-            String port = getProperty(properties, "port");
-            String host = getProperty(properties, "host");
-            String database = getProperty(properties, "database");
-
-            String url = String.format(DB_URL, host, port, database);
-            // 注册 JDBC 驱动
-            Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection(url, username, password);
-            Eorm db = new EormImpl(connection);
-
-            List<TableModel> tables = db.select(TableModel.class, SQL_TABLE, database);
-            if (null != tables && !tables.isEmpty()) {
-                DATA_TABLES.clear();
-
-                for (TableModel table : tables) {
-                    DATA_TABLES.add(table);
-                    String tableName = table.getTableName();
-                    List<ColumnModel> columns = db.select(ColumnModel.class, SQL_COLUMN, database, tableName);
-                    DATA_COLUMNS.put(tableName, columns);
-                }
-            }
-
-            outLog("end DATA_TABLES:" + DATA_TABLES.size());
-        } catch (Exception e) {
-            outLog(e);
-        } finally {
-            try {
-                if (null != connection) {
-                    connection.close();
-                    connection = null;
-                }
-            } catch (SQLException ex) {
-
-            }
-        }
-    }
-
-    private String getProperty(Properties properties, String key) {
-        String value = properties.getProperty(key);
-        if (null != value) {
-            value = value.trim();
-        }
-        return value;
-    }
-
-    private String getEOrmSQL(int caretOffset, String text) {
+    private String getEormSQL(int caretOffset, String text) {
         if (!text.contains("\"\"/*{") || !text.contains("}*/;")) {
             return null;
         }

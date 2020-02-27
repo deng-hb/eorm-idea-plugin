@@ -19,8 +19,6 @@ public class Config {
 
     private boolean since;
 
-    private boolean DDL;
-
     private boolean schema;
 
     private String prefix;
@@ -79,14 +77,6 @@ public class Config {
         this.since = since;
     }
 
-    public boolean isDDL() {
-        return DDL;
-    }
-
-    public void setDDL(boolean DDL) {
-        this.DDL = DDL;
-    }
-
     public boolean isSchema() {
         return schema;
     }
@@ -136,7 +126,6 @@ public class Config {
                 ", override=" + override +
                 ", bigDecimal=" + bigDecimal +
                 ", since=" + since +
-                ", DDL=" + DDL +
                 ", schema=" + schema +
                 ", prefix='" + prefix + '\'' +
                 ", author='" + author + '\'' +

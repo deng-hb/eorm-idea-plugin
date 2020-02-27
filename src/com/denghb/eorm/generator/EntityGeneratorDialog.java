@@ -1,9 +1,9 @@
 package com.denghb.eorm.generator;
 
-import com.denghb.eorm.Eorm;
-import com.denghb.eorm.generator.model.ColumnModel;
 import com.denghb.eorm.generator.model.TableModel;
-import com.denghb.eorm.impl.EormImpl;
+import com.denghb.eorm.provider.TableDataCallback;
+import com.denghb.eorm.provider.TableDataProvider;
+import com.denghb.eorm.utils.JdbcUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.*;
@@ -11,10 +11,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 
@@ -33,7 +29,6 @@ public class EntityGeneratorDialog extends JDialog {
     private JCheckBox sinceCheckBox;
     private JTextField authorField;
     private JTextField prefixField;
-    private JCheckBox DDLCheckBox;
     private JCheckBox bigDecimalCheckBox;
 
     private List<TableModel> data = new ArrayList<TableModel>();
@@ -66,11 +61,23 @@ public class EntityGeneratorDialog extends JDialog {
         loadButton.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                refreshConfig();
 
-                SwingUtilities.invokeLater(new Runnable() {
+                TableDataProvider.load(config.getJdbc(), new TableDataCallback() {
                     @Override
-                    public void run() {
-                        onLoad();
+                    public void on(List<TableModel> tables) {
+                        data.clear();
+                        data.addAll(tables);
+
+                        origin.clear();
+                        origin.addAll(tables);
+
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                dataTable.updateUI();
+                            }
+                        });
                     }
                 });
             }
@@ -132,7 +139,6 @@ public class EntityGeneratorDialog extends JDialog {
         sinceCheckBox.setSelected(config.isSince());
 
         overrideCheckBox.setSelected(config.isOverride());
-        DDLCheckBox.setSelected(config.isDDL());
         schemaCheckBox.setSelected(config.isSchema());
 
         Map<String, String> pathData = config.getPackageNamePath();
@@ -171,24 +177,11 @@ public class EntityGeneratorDialog extends JDialog {
         config.setBigDecimal(bigDecimalCheckBox.isSelected());
 
         config.setSince(sinceCheckBox.isSelected());
-        config.setDDL(DDLCheckBox.isSelected());
         config.setSchema(schemaCheckBox.isSelected());
 
         config.setPackageName((String) packageComboBox.getSelectedItem());
 
-        config.setDatabase(getDatabase(jdbcField.getText()));
-    }
-
-    private String getDatabase(String jdbc) {
-        if (null == jdbc) {
-            return null;
-        }
-        int start = jdbc.lastIndexOf("/");
-        int end = jdbc.indexOf("?");
-        if (-1 == start || -1 == end) {
-            return null;
-        }
-        return jdbc.substring(start + 1, end);
+        config.setDatabase(JdbcUtils.getDatabase(jdbcField.getText()));
     }
 
     private void onOK() {
@@ -206,63 +199,6 @@ public class EntityGeneratorDialog extends JDialog {
     private void onCancel() {
         // add your code here if necessary
         dispose();
-    }
-
-
-    private void onLoad() {
-        Connection connection = null;
-        try {
-            refreshConfig();
-            String jdbc = config.getJdbc();
-
-            Class.forName("com.mysql.jdbc.Driver");
-            connection = DriverManager.getConnection(jdbc);
-            Eorm db = new EormImpl(connection);
-
-
-            String database = config.getDatabase();
-            List<TableModel> tables = db.select(TableModel.class, Consts.SQL_TABLE, database);
-
-            data.clear();
-            data.addAll(tables);
-            dataTable.updateUI();
-
-            origin.clear();
-            origin.addAll(tables);
-
-
-            List<ColumnModel> columns = db.select(ColumnModel.class, Consts.SQL_COLUMN, database);
-            for (TableModel table : tables) {
-                table.setColumns(new ArrayList<ColumnModel>());
-
-                // 查询DDL 只能拼接
-                String ddlSql = "show create table `" + database + "`.`" + table.getTableName() + "`";
-                Map map = db.selectOne(Map.class, ddlSql);
-                String ddl = (String) map.get("Create Table");
-                table.setDDL(ddl);
-
-                for (int i = 0; i < columns.size(); i++) {
-                    ColumnModel column = columns.get(i);
-                    if (column.getTableName().equals(table.getTableName())) {
-                        table.getColumns().add(column);
-                        columns.remove(i);
-                        i--;
-                    }
-                }
-            }
-
-            System.out.println(tables);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (null != connection) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     public EntityGeneratorHandler getEntityGeneratorHandler() {

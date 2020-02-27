@@ -53,8 +53,7 @@ public class EormEntityGeneratorMenu extends AnAction {
         }
 
         PropertiesComponent pc = PropertiesComponent.getInstance();
-        String basePrefix = DigestUtils.md5Hex(basePath);
-        String keyConfig = basePrefix + Consts.GENERATOR_CONFIG;
+        String keyConfig =  DigestUtils.md5Hex(basePath) + Consts.GENERATOR_CONFIG;
         String json = pc.getValue(keyConfig);
         System.out.println(json);
 
@@ -81,7 +80,7 @@ public class EormEntityGeneratorMenu extends AnAction {
                 pc.setValue(keyConfig, gson.toJson(config));
             }
         });
-        dialog.setSize(550, 400);
+        dialog.setSize(500, 400);
         dialog.setAlwaysOnTop(true);
         // dialog.setResizable(false);
 //        dialog.setModal(true);

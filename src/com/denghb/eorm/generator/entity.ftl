@@ -5,11 +5,7 @@ import com.denghb.eorm.annotation.Etable;
 
 /**
  * ${table.tableComment}
-<#if config.DDL > * DDL
- * 
- <pre>
-${table.DDL}
- <pre> <#else> *</#if>
+ *
  * @author ${config.author}
 <#if config.since > * @since ${generateTime}
 </#if> */

@@ -33,12 +33,13 @@ public class MultiLineSQLHighlighter implements Annotator {
     private static final String ALL_EXPRESSION = "#IF#ELSEIF#ELSE#END#";
 
     // 符号
-    private static final String ALL_SYMBOL = "=+-*/><(),.%|&?";
+    private static final String ALL_SYMBOL = "=+-*/><(),.%|&?!";
 
     @Override
     public void annotate(@NotNull PsiElement psiElement, @NotNull AnnotationHolder annotationHolder) {
 
         String code = psiElement.getText();
+        // /*{ /*SQL{
         if (!code.startsWith("/*{") && !code.endsWith("}*/")) {
             return;
         }
