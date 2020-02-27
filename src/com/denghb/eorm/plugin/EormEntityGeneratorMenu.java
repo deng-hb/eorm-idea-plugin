@@ -44,16 +44,20 @@ public class EormEntityGeneratorMenu extends AnAction {
 
         Map<String, String> packageNamePath = new HashMap<>();
         for (String path : list) {
-            String name = path.substring(path.indexOf(sourceDir) + sourceDir.length() + 1);
-
-            name = name.replaceAll("/", ".");
-            packageNamePath.put(name, path);
+            int start = path.indexOf(sourceDir);
+            if (path.length() > start + sourceDir.length() + 1) {
+                String name = path.substring(start + sourceDir.length() + 1);
+                name = name.replaceAll("/", ".");
+                packageNamePath.put(name, path);
+            }
         }
 
         PropertiesComponent pc = PropertiesComponent.getInstance();
         String basePrefix = DigestUtils.md5Hex(basePath);
         String keyConfig = basePrefix + Consts.GENERATOR_CONFIG;
         String json = pc.getValue(keyConfig);
+        System.out.println(json);
+
         Gson gson = new Gson();
         Config config = gson.fromJson(json, Config.class);
         if (null == config) {
@@ -77,9 +81,9 @@ public class EormEntityGeneratorMenu extends AnAction {
                 pc.setValue(keyConfig, gson.toJson(config));
             }
         });
-        dialog.setSize(550, 350);
+        dialog.setSize(550, 400);
         dialog.setAlwaysOnTop(true);
-        dialog.setResizable(false);
+        // dialog.setResizable(false);
 //        dialog.setModal(true);
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
