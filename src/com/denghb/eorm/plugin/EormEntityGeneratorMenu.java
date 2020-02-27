@@ -1,20 +1,21 @@
 package com.denghb.eorm.plugin;
 
-import com.denghb.eorm.generator.EntityGenerator;
-import com.denghb.eorm.generator.model.PackagePathModel;
+import com.denghb.eorm.generator.*;
+import com.denghb.eorm.generator.model.TableModel;
+import com.google.gson.Gson;
+import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.*;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @since
@@ -41,16 +42,41 @@ public class EormEntityGeneratorMenu extends AnAction {
             findPackage(dir + sourceDir, list);
         }
 
-        List<PackagePathModel> packagePathModelList = new ArrayList<>();
-        for (String dir : list) {
-            String p = dir.substring(dir.indexOf(sourceDir) + sourceDir.length() + 1);
+        Map<String, String> packageNamePath = new HashMap<>();
+        for (String path : list) {
+            String name = path.substring(path.indexOf(sourceDir) + sourceDir.length() + 1);
 
-            p = p.replaceAll("/", ".");
-            packagePathModelList.add(new PackagePathModel(p, dir));
+            name = name.replaceAll("/", ".");
+            packageNamePath.put(name, path);
         }
 
-        System.out.println(list);
-        EntityGenerator dialog = new EntityGenerator(basePath, packagePathModelList);
+        PropertiesComponent pc = PropertiesComponent.getInstance();
+        String basePrefix = DigestUtils.md5Hex(basePath);
+        String keyConfig = basePrefix + Consts.GENERATOR_CONFIG;
+        String json = pc.getValue(keyConfig);
+        Gson gson = new Gson();
+        Config config = gson.fromJson(json, Config.class);
+        if (null == config) {
+            config = new Config();
+            config.setJdbc("jdbc:mysql://localhost:3306/test?user=root&password=123456&useUnicode=true&characterEncoding=utf8");
+            config.setAuthor(System.getProperties().getProperty("user.name"));
+        }
+        config.setPackageNamePath(packageNamePath);
+
+        EntityGeneratorDialog dialog = new EntityGeneratorDialog(config);
+        dialog.setEntityGeneratorHandler(new EntityGeneratorHandler() {
+            @Override
+            public void onCallback(List<TableModel> data, Config config) {
+
+                String generateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+                for (TableModel table : data) {
+                    if (table.isChecked()) {
+                        EntityGeneratorCode.doExec(table, config, generateTime);
+                    }
+                }
+                pc.setValue(keyConfig, gson.toJson(config));
+            }
+        });
         dialog.setSize(550, 350);
         dialog.setAlwaysOnTop(true);
         dialog.setResizable(false);

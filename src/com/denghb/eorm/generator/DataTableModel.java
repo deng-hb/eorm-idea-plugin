@@ -1,16 +1,18 @@
-package com.denghb.eorm.generator.model;
+package com.denghb.eorm.generator;
 
+import com.denghb.eorm.generator.model.TableModel;
 
 import javax.swing.table.AbstractTableModel;
-import java.util.Vector;
+import java.util.List;
 
+// 表头数据绑定
 public class DataTableModel extends AbstractTableModel {
 
     String[] n = {"Table Name", "Comment", ""};
 
-    private Vector<DataModel> data;
+    private List<TableModel> data;
 
-    public DataTableModel(Vector<DataModel> data) {
+    public DataTableModel(List<TableModel> data) {
         this.data = data;
     }
 
@@ -26,7 +28,7 @@ public class DataTableModel extends AbstractTableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        DataModel model = data.get(rowIndex);
+        TableModel model = data.get(rowIndex);
         switch (columnIndex) {
             case 0:
                 return model.getTableName();
@@ -57,14 +59,13 @@ public class DataTableModel extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        System.out.println("setValueAt" + aValue);
+        // System.out.println("setValueAt" + aValue);
         if (columnIndex == 2) {
             data.get(rowIndex).setChecked((Boolean) aValue);
         }
 
         fireTableCellUpdated(rowIndex, columnIndex);
     }
-
 
     public void selectAllOrNull(boolean value) {
         // Select All. The last column

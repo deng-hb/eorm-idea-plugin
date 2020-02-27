@@ -1,8 +1,8 @@
 package com.denghb.eorm.plugin;
 
 import com.denghb.eorm.Eorm;
-import com.denghb.eorm.generator.model.Column;
-import com.denghb.eorm.generator.model.Table;
+import com.denghb.eorm.generator.model.ColumnModel;
+import com.denghb.eorm.generator.model.TableModel;
 import com.denghb.eorm.impl.EormImpl;
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate;
 import com.intellij.codeInsight.lookup.LookupElement;
@@ -13,7 +13,6 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
-import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
@@ -45,8 +44,8 @@ public class MultiLineSQLSmartTipHandler extends TypedHandlerDelegate {
     private static final String SQL_TABLE = "select table_name, table_comment from information_schema.tables where table_schema = ?";
     private static final String SQL_COLUMN = "select column_name, column_type, column_comment from information_schema.columns where table_schema = ? and table_name = ? ";
 
-    private static final List<Table> DATA_TABLES = new Vector<Table>();
-    private static final Map<String, List<Column>> DATA_COLUMNS = new ConcurrentHashMap<String, List<Column>>();
+    private static final List<TableModel> DATA_TABLES = new Vector<TableModel>();
+    private static final Map<String, List<ColumnModel>> DATA_COLUMNS = new ConcurrentHashMap<String, List<ColumnModel>>();
 
     private String projectPath;
 
@@ -95,7 +94,7 @@ public class MultiLineSQLSmartTipHandler extends TypedHandlerDelegate {
             // 显示提示内容
             LookupElement[] lookupElement = new LookupElement[DATA_TABLES.size()];
             for (int i = 0; i < lookupElement.length; i++) {
-                Table table = DATA_TABLES.get(i);
+                TableModel table = DATA_TABLES.get(i);
                 lookupElement[i] = LookupElementBuilder.create(table.getTableName())
                         .withTypeText(table.getTableComment(), true);
             }
@@ -114,13 +113,13 @@ public class MultiLineSQLSmartTipHandler extends TypedHandlerDelegate {
         }
 
         // 显示提示内容
-        List<Column> columns = DATA_COLUMNS.get(tableName);
+        List<ColumnModel> columns = DATA_COLUMNS.get(tableName);
         if (null == columns || columns.isEmpty()) {
             return Result.STOP;
         }
         LookupElement[] lookupElement = new LookupElement[columns.size()];
         for (int i = 0; i < lookupElement.length; i++) {
-            Column column = columns.get(i);
+            ColumnModel column = columns.get(i);
             lookupElement[i] = LookupElementBuilder.create(column.getColumnName())
                     .withTailText(" " + column.getColumnComment(), true)
                     .withTypeText(column.getColumnType());
@@ -199,14 +198,14 @@ public class MultiLineSQLSmartTipHandler extends TypedHandlerDelegate {
             connection = DriverManager.getConnection(url, username, password);
             Eorm db = new EormImpl(connection);
 
-            List<Table> tables = db.select(Table.class, SQL_TABLE, database);
+            List<TableModel> tables = db.select(TableModel.class, SQL_TABLE, database);
             if (null != tables && !tables.isEmpty()) {
                 DATA_TABLES.clear();
 
-                for (Table table : tables) {
+                for (TableModel table : tables) {
                     DATA_TABLES.add(table);
                     String tableName = table.getTableName();
-                    List<Column> columns = db.select(Column.class, SQL_COLUMN, database, tableName);
+                    List<ColumnModel> columns = db.select(ColumnModel.class, SQL_COLUMN, database, tableName);
                     DATA_COLUMNS.put(tableName, columns);
                 }
             }

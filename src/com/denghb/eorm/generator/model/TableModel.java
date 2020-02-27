@@ -1,28 +1,28 @@
 package com.denghb.eorm.generator.model;
 
-/**
- * Created by denghb on 2017/2/20.
- */
-public class DataModel {
+import java.util.List;
 
-    /**
-     * 表名
-     */
+/**
+ * Created by denghb
+ */
+public class TableModel {
+
+    // 表名
     private String tableName;
 
-    /**
-     * 表备注
-     */
+    // 表备注
     private String tableComment;
 
-    private boolean checked = false;// 默认不选中
+    // 列信息
+    private List<ColumnModel> columns;
+
+    // 默认不选中
+    private boolean checked = false;
+
+    // DDL
+    private String DDL;
 
     public String getTableName() {
-
-        if (null != tableName) {
-            // 去掉*号
-            tableName = tableName.replaceAll("\\*/", "");
-        }
         return tableName;
     }
 
@@ -31,9 +31,6 @@ public class DataModel {
     }
 
     public String getTableComment() {
-        if (null != tableComment) {
-            tableComment = tableComment.replaceAll("\\*/", "");
-        }
         return tableComment;
     }
 
@@ -41,6 +38,13 @@ public class DataModel {
         this.tableComment = tableComment;
     }
 
+    public List<ColumnModel> getColumns() {
+        return columns;
+    }
+
+    public void setColumns(List<ColumnModel> columns) {
+        this.columns = columns;
+    }
     public boolean isChecked() {
         return checked;
     }
@@ -49,12 +53,22 @@ public class DataModel {
         this.checked = checked;
     }
 
+    public String getDDL() {
+        return DDL;
+    }
+
+    public void setDDL(String DDL) {
+        this.DDL = DDL;
+    }
+
     @Override
     public String toString() {
-        return "DatabaseInfo{" +
+        return "TableModel{" +
                 "tableName='" + tableName + '\'' +
                 ", tableComment='" + tableComment + '\'' +
+                ", columns=" + columns +
                 ", checked=" + checked +
+                ", DDL='" + DDL + '\'' +
                 '}';
     }
 }

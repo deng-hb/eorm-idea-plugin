@@ -1,7 +1,5 @@
 package com.denghb.eorm.generator;
 
-import com.denghb.eorm.generator.model.DataTableModel;
-
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -15,12 +13,13 @@ import javax.swing.UIManager;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 
-public class CheckHeaderCellRenderer implements TableCellRenderer {
+public class DataTableHeaderCellRenderer implements TableCellRenderer {
+
     DataTableModel tableModel;
     JTableHeader tableHeader;
     final JCheckBox selectBox;
 
-    public CheckHeaderCellRenderer(final JTable table) {
+    public DataTableHeaderCellRenderer(final JTable table) {
         this.tableModel = (DataTableModel) table.getModel();
         this.tableHeader = table.getTableHeader();
         selectBox = new JCheckBox(tableModel.getColumnName(table.getColumnCount() - 1));
@@ -47,7 +46,7 @@ public class CheckHeaderCellRenderer implements TableCellRenderer {
         // TODO Auto-generated method stub
         String valueStr = (String) value;
         JLabel label = new JLabel(valueStr);
-        label.setHorizontalAlignment(SwingConstants.CENTER); // 表头标签剧中
+        //label.setHorizontalAlignment(SwingConstants.CENTER); // 表头标签剧中
         selectBox.setHorizontalAlignment(SwingConstants.CENTER);// 表头标签剧中
         selectBox.setBorderPainted(true);
         JComponent component = (column == table.getColumnCount() - 1) ? selectBox : label;

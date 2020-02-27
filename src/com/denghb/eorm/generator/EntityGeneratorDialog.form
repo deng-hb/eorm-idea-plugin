@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.denghb.eorm.generator.EntityGenerator">
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="com.denghb.eorm.generator.EntityGeneratorDialog">
   <grid id="cbd77" binding="contentPane" layout-manager="GridLayoutManager" row-count="3" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
@@ -80,7 +80,7 @@
               </grid>
             </constraints>
             <properties>
-              <text value="jdbc:mysql://localhost:3306/test?user=root&amp;password=123456&amp;useUnicode=true&amp;characterEncoding=utf8"/>
+              <text value=""/>
             </properties>
           </component>
           <component id="cfeaf" class="javax.swing.JLabel">
@@ -95,22 +95,6 @@
             <constraints>
               <grid row="3" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="100" height="-1"/>
-              </grid>
-            </constraints>
-            <properties/>
-          </component>
-          <component id="3b95a" class="javax.swing.JLabel">
-            <constraints>
-              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value="Prefix"/>
-            </properties>
-          </component>
-          <component id="c72ef" class="javax.swing.JTextField" binding="prefixField">
-            <constraints>
-              <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                <preferred-size width="60" height="-1"/>
               </grid>
             </constraints>
             <properties/>
@@ -145,14 +129,6 @@
               <text value="Override"/>
             </properties>
           </component>
-          <component id="d26f7" class="javax.swing.JCheckBox" binding="sinceCheckBox" default-binding="true">
-            <constraints>
-              <grid row="1" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value="Since"/>
-            </properties>
-          </component>
           <component id="a4e11" class="javax.swing.JCheckBox" binding="schemaCheckBox" default-binding="true">
             <constraints>
               <grid row="1" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
@@ -161,17 +137,17 @@
               <text value="Schema"/>
             </properties>
           </component>
-          <component id="4ccaa" class="javax.swing.JLabel">
+          <component id="e3a1a" class="javax.swing.JCheckBox" binding="DDLCheckBox" default-binding="true">
             <constraints>
-              <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="1" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Author"/>
+              <text value="DDL"/>
             </properties>
           </component>
           <component id="eaed5" class="javax.swing.JTextField" binding="authorField">
             <constraints>
-              <grid row="2" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false">
+              <grid row="2" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="100" height="-1"/>
               </grid>
             </constraints>
@@ -179,21 +155,47 @@
               <text value="denghb"/>
             </properties>
           </component>
+          <component id="4ccaa" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="2" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Author"/>
+            </properties>
+          </component>
           <component id="3b506" class="javax.swing.JCheckBox" binding="bigDecimalCheckBox" default-binding="true">
             <constraints>
-              <grid row="1" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="1" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <text value="BigDecimal"/>
               <toolTipText value="Float,Double to BigDecimal"/>
             </properties>
           </component>
-          <component id="e3a1a" class="javax.swing.JCheckBox" binding="DDLCheckBox" default-binding="true">
+          <component id="d26f7" class="javax.swing.JCheckBox" binding="sinceCheckBox" default-binding="true">
             <constraints>
-              <grid row="1" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+              <grid row="1" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="DDL"/>
+              <text value="Since"/>
+            </properties>
+          </component>
+          <component id="3b95a" class="javax.swing.JLabel">
+            <constraints>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Prefix"/>
+            </properties>
+          </component>
+          <component id="c72ef" class="javax.swing.JTextField" binding="prefixField">
+            <constraints>
+              <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="60" height="-1"/>
+              </grid>
+            </constraints>
+            <properties>
+              <toolTipText value="ignore prefix:[t_] =&gt; t_user -&gt; User"/>
             </properties>
           </component>
         </children>
