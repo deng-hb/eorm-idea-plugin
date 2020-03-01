@@ -3,6 +3,10 @@
 <p>Eorm based spring-jdbc JdbcTemplate & NamedParameterJdbcTemplate a every every good ORM framework.</p>
 
 ### Changelog
+<h3>v1.0.4</h3>
+<p>Add Eorm entity generator tool</p>
+<p>Menu > Code > Eorm Entity Generator</p>
+
 <h3>v1.0.3</h3>
 <ul>
 <li>add smart tip table name </li>

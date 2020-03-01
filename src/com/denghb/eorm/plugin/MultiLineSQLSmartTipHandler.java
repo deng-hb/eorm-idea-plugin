@@ -133,6 +133,11 @@ public class MultiLineSQLSmartTipHandler extends TypedHandlerDelegate {
                     DATA_TABLES.addAll(tables);
                     System.out.println("tables init " + tables.size());
                 }
+
+                @Override
+                public void onMessage(String message) {
+                    outLog(message);
+                }
             });
         }
     }

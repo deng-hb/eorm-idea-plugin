@@ -5,6 +5,7 @@ import com.denghb.eorm.generator.model.TableModel;
 import com.denghb.eorm.utils.JdbcUtils;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import freemarker.template.TemplateException;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -12,7 +13,7 @@ import java.util.*;
 
 public class EntityGeneratorCode {
 
-    public static void doExec(TableModel table, Config config, String generateTime) {
+    public static void doExec(TableModel table, Config config, String generateTime) throws Exception {
 
         preprocessor(config, table.getColumns());
 
@@ -32,7 +33,7 @@ public class EntityGeneratorCode {
             tableComment = tableComment.replaceAll("\\*/", "\\*\\/");
             table.setTableComment(tableComment);
         }
-
+        Writer out = null;
         try {
 
             Configuration conf = new Configuration(Configuration.VERSION_2_3_0);
@@ -58,12 +59,21 @@ public class EntityGeneratorCode {
             if (!file.exists()) {
                 file.createNewFile();
             }
-            Writer out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
+            out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
 
             template.process(root, out);
             out.flush();
+
         } catch (Exception e) {
-            e.printStackTrace();
+            throw e;
+        } finally {
+            try {
+                if (null != out) {
+                    out.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

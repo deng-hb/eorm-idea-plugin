@@ -7,4 +7,6 @@ import java.util.List;
 public interface EntityGeneratorHandler {
 
     void onCallback(List<TableModel> data, Config config);
+
+    void onMessage(String message);
 }

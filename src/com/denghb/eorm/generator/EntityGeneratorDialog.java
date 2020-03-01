@@ -4,13 +4,16 @@ import com.denghb.eorm.generator.model.TableModel;
 import com.denghb.eorm.provider.TableDataCallback;
 import com.denghb.eorm.provider.TableDataProvider;
 import com.denghb.eorm.utils.JdbcUtils;
+import com.intellij.openapi.util.IconLoader;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.*;
+import java.net.URL;
 import java.util.*;
 import java.util.List;
 
@@ -61,25 +64,7 @@ public class EntityGeneratorDialog extends JDialog {
         loadButton.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                refreshConfig();
-
-                TableDataProvider.load(config.getJdbc(), new TableDataCallback() {
-                    @Override
-                    public void on(List<TableModel> tables) {
-                        data.clear();
-                        data.addAll(tables);
-
-                        origin.clear();
-                        origin.addAll(tables);
-
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                dataTable.updateUI();
-                            }
-                        });
-                    }
-                });
+                onLoad();
             }
         });
 
@@ -127,6 +112,64 @@ public class EntityGeneratorDialog extends JDialog {
                 filterData(filterField.getText());
             }
         });
+    }
+
+    private void onLoad() {
+        refreshConfig();
+        String jdbc = config.getJdbc();
+        if (StringUtils.isBlank(loadButton.getText())) {
+            System.out.println("loading ..");
+            return;
+        }
+        if (StringUtils.isBlank(jdbc) || !jdbc.contains("mysql")) {
+            handlerMessage("JDBC connection only MySQL");
+            return;
+        }
+
+        URL url = getClass().getResource("loading.gif");
+        ImageIcon icon = new ImageIcon(url);
+        loadButton.setIcon(icon);
+        loadButton.setText("");
+
+        TableDataProvider.load(jdbc, new TableDataCallback() {
+            @Override
+            public void on(List<TableModel> tables) {
+                data.clear();
+                data.addAll(tables);
+
+                origin.clear();
+                origin.addAll(tables);
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        dataTable.updateUI();
+
+                        loadButton.setIcon(null);
+                        loadButton.setText("Load");
+                    }
+                });
+            }
+
+            @Override
+            public void onMessage(String message) {
+                handlerMessage(message);
+
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        loadButton.setIcon(null);
+                        loadButton.setText("Load");
+                    }
+                });
+            }
+        });
+    }
+
+    private void handlerMessage(String message) {
+        if (null != entityGeneratorHandler) {
+            entityGeneratorHandler.onMessage(message);
+        }
     }
 
     private void initConfig() {

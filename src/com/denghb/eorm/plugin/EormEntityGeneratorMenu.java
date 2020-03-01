@@ -7,10 +7,12 @@ import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.*;
 
+import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
@@ -53,7 +55,7 @@ public class EormEntityGeneratorMenu extends AnAction {
         }
 
         PropertiesComponent pc = PropertiesComponent.getInstance();
-        String keyConfig =  DigestUtils.md5Hex(basePath) + Consts.GENERATOR_CONFIG;
+        String keyConfig = DigestUtils.md5Hex(basePath) + Consts.GENERATOR_CONFIG;
         String json = pc.getValue(keyConfig);
         System.out.println(json);
 
@@ -61,7 +63,7 @@ public class EormEntityGeneratorMenu extends AnAction {
         Config config = gson.fromJson(json, Config.class);
         if (null == config) {
             config = new Config();
-            config.setJdbc("jdbc:mysql://localhost:3306/test?user=root&password=123456&useUnicode=true&characterEncoding=utf8");
+            config.setJdbc("jdbc:mysql://localhost:3306/test?connectTimeout=3000&useUnicode=true&characterEncoding=utf8&user=root&password=123456");
             config.setAuthor(System.getProperties().getProperty("user.name"));
         }
         config.setPackageNamePath(packageNamePath);
@@ -72,21 +74,47 @@ public class EormEntityGeneratorMenu extends AnAction {
             public void onCallback(List<TableModel> data, Config config) {
 
                 String generateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+                int succ = 0;
+                int fail = 0;
                 for (TableModel table : data) {
                     if (table.isChecked()) {
-                        EntityGeneratorCode.doExec(table, config, generateTime);
+                        try {
+                            EntityGeneratorCode.doExec(table, config, generateTime);
+                            succ++;
+                        } catch (Exception e) {
+                            fail++;
+                            e.printStackTrace();
+                            showMessage(e.getMessage(), "Error");
+                        }
                     }
                 }
                 pc.setValue(keyConfig, gson.toJson(config));
+                if (succ > 0 || fail > 0) {
+                    showMessage(String.format("Success:%d\nFail:%d", succ, fail), "Info");
+                }
+            }
+
+            @Override
+            public void onMessage(String message) {
+                showMessage(message, "Warning");
             }
         });
-        dialog.setSize(500, 400);
+        dialog.setSize(560, 400);
         dialog.setAlwaysOnTop(true);
         // dialog.setResizable(false);
 //        dialog.setModal(true);
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
         dialog.requestFocus();
+    }
+
+    private void showMessage(String message, String title) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Messages.showErrorDialog(message, title);
+            }
+        });
     }
 
     private void getModules(File modulesXmlFile, String basePath, List<String> dirs) {

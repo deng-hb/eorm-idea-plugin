@@ -60,6 +60,7 @@ public class TableDataTask implements Runnable {
             tableDataCallback.on(tables);
         } catch (Exception e) {
             e.printStackTrace();
+            tableDataCallback.onMessage(e.getMessage());
         } finally {
             try {
                 if (null != connection) {
