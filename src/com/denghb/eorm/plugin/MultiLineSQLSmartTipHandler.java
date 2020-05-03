@@ -6,7 +6,8 @@ import com.denghb.eorm.generator.model.ColumnModel;
 import com.denghb.eorm.generator.model.TableModel;
 import com.denghb.eorm.provider.TableDataCallback;
 import com.denghb.eorm.provider.TableDataProvider;
-import com.google.gson.Gson;
+import com.denghb.eorm.plugin.utils.JSON;
+import com.denghb.eorm.plugin.utils.MD5Utils;
 import com.intellij.codeInsight.editorActions.TypedHandlerDelegate;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
@@ -17,7 +18,6 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
@@ -123,8 +123,8 @@ public class MultiLineSQLSmartTipHandler extends TypedHandlerDelegate {
     private void loadTableColumns() {
 
         PropertiesComponent pc = PropertiesComponent.getInstance();
-        String keyConfig = DigestUtils.md5Hex(projectPath) + Consts.GENERATOR_CONFIG;
-        Config config = new Gson().fromJson(pc.getValue(keyConfig), Config.class);
+        String keyConfig = MD5Utils.text(projectPath) + Consts.GENERATOR_CONFIG;
+        Config config = JSON.parseJSON(Config.class, pc.getValue(keyConfig));
         if (null != config) {
             TableDataProvider.load(config.getJdbc(), new TableDataCallback() {
                 @Override

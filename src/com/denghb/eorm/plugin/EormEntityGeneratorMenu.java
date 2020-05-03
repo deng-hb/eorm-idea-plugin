@@ -2,65 +2,59 @@ package com.denghb.eorm.plugin;
 
 import com.denghb.eorm.generator.*;
 import com.denghb.eorm.generator.model.TableModel;
-import com.google.gson.Gson;
+import com.denghb.eorm.plugin.utils.JSON;
+import com.denghb.eorm.plugin.utils.MD5Utils;
+import com.denghb.eorm.plugin.utils.StringUtils;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.jetbrains.annotations.NotNull;
-import org.w3c.dom.*;
 
 import javax.swing.*;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * @since
+ * Idea Plugin
+ *
+ * @author denghb
+ * @since 2020/2/27
  */
 public class EormEntityGeneratorMenu extends AnAction {
+
+    // 存Java源代码的文件目录
+    private final static String SOURCE_DIR = "/src/main/java";
+
+    // 存实体类的包名
+    private final static List<String> ENTITY_NAMES = Arrays.asList("entity", "domain");
+
+    private static String KEY_CONFIG = null;
+
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
 
         Project project = event.getProject();
         String basePath = project.getBasePath();
 
+        KEY_CONFIG = MD5Utils.text(basePath) + Consts.GENERATOR_CONFIG;
 
-        String sourceDir = "/src/main/java";
-        // 查找package
-        List<String> modules = new ArrayList<>();
-        modules.add(basePath);
-        File modulesXmlFile = new File(basePath + "/.idea/modules.xml");
-        if (modulesXmlFile.exists()) {
-            getModules(modulesXmlFile, basePath, modules);
-        }
+        List<String> sourceDirs = new ArrayList<>();
+        findSourceDir(sourceDirs, basePath);
 
-        Set<String> list = new HashSet<>();
-        for (String dir : modules) {
-            findPackage(dir + sourceDir, list);
-        }
-
+        // com.denghb, /Users/denghb/IdeaProjects/xxx/com/denghb
         Map<String, String> packageNamePath = new HashMap<>();
-        for (String path : list) {
-            int start = path.indexOf(sourceDir);
-            if (path.length() > start + sourceDir.length() + 1) {
-                String name = path.substring(start + sourceDir.length() + 1);
+        for (String path : sourceDirs) {
+            int start = path.indexOf(SOURCE_DIR);
+            if (path.length() > start + SOURCE_DIR.length() + 1) {
+                String name = path.substring(start + SOURCE_DIR.length() + 1);
                 name = name.replaceAll("/", ".");
                 packageNamePath.put(name, path);
             }
         }
-
-        PropertiesComponent pc = PropertiesComponent.getInstance();
-        String keyConfig = DigestUtils.md5Hex(basePath) + Consts.GENERATOR_CONFIG;
-        String json = pc.getValue(keyConfig);
-        System.out.println(json);
-
-        Gson gson = new Gson();
-        Config config = gson.fromJson(json, Config.class);
+        Config config = getConfig();
         if (null == config) {
             config = new Config();
             config.setJdbc("jdbc:mysql://localhost:3306/test?connectTimeout=3000&useUnicode=true&characterEncoding=utf8&user=root&password=123456");
@@ -70,33 +64,24 @@ public class EormEntityGeneratorMenu extends AnAction {
 
         EntityGeneratorDialog dialog = new EntityGeneratorDialog(config);
         dialog.setEntityGeneratorHandler(new EntityGeneratorHandler() {
-            @Override
-            public void onCallback(List<TableModel> data, Config config) {
 
-                String generateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-                int succ = 0;
-                int fail = 0;
-                for (TableModel table : data) {
-                    if (table.isChecked()) {
-                        try {
-                            EntityGeneratorCode.doExec(table, config, generateTime);
-                            succ++;
-                        } catch (Exception e) {
-                            fail++;
-                            e.printStackTrace();
-                            showMessage(e.getMessage(), "Error");
-                        }
-                    }
-                }
-                pc.setValue(keyConfig, gson.toJson(config));
-                if (succ > 0 || fail > 0) {
-                    showMessage(String.format("Success:%d\nFail:%d", succ, fail), "Info");
+            @Override
+            public void onCallback(List<TableModel> data) {
+                try {
+                    doExc(data);
+                } catch (Exception e) {
+                    showMessage(e.getMessage(), "Error");
                 }
             }
 
             @Override
             public void onMessage(String message) {
                 showMessage(message, "Warning");
+            }
+
+            @Override
+            public void onConfig(Config config) {
+                setConfig(config);
             }
         });
         dialog.setSize(560, 400);
@@ -108,6 +93,56 @@ public class EormEntityGeneratorMenu extends AnAction {
         dialog.requestFocus();
     }
 
+    private void doExc(List<TableModel> data) {
+        String generateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        int succ = 0;
+        int fail = 0;
+        Config config = getConfig();
+        if (StringUtils.isBlank(config.getPackageName())) {
+            showMessage("Package Not Empty \nPackage name eq 'entity' or 'domain'", "Error");
+            return;
+        }
+        for (TableModel table : data) {
+            if (table.isChecked()) {
+                try {
+                    EntityGeneratorCode.doExec(table, config, generateTime);
+                    succ++;
+                } catch (Exception e) {
+                    fail++;
+                    e.printStackTrace();
+                    showMessage(e.getMessage(), "Error");
+                }
+            }
+        }
+        if (succ > 0 || fail > 0) {
+            showMessage(String.format("Success:%d\nFail:%d", succ, fail), "Info");
+        }
+    }
+
+
+    private Config getConfig() {
+        Config config = null;
+        try {
+            PropertiesComponent pc = PropertiesComponent.getInstance();
+            String json = pc.getValue(KEY_CONFIG);
+            System.out.println(json);
+
+            config = JSON.parseJSON(Config.class, json);
+        } catch (Exception e) {
+            showMessage(e.getMessage(), "Warning");
+        }
+        return config;
+    }
+
+    private void setConfig(Config config) {
+        try {
+            PropertiesComponent pc = PropertiesComponent.getInstance();
+            pc.setValue(KEY_CONFIG, JSON.toJSON(config));
+        } catch (Exception e) {
+            showMessage(e.getMessage(), "Warning");
+        }
+    }
+
     private void showMessage(String message, String title) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -115,38 +150,6 @@ public class EormEntityGeneratorMenu extends AnAction {
                 Messages.showErrorDialog(message, title);
             }
         });
-    }
-
-    private void getModules(File modulesXmlFile, String basePath, List<String> dirs) {
-
-        try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document document = builder.parse(modulesXmlFile);
-            NodeList modules = document.getElementsByTagName("module");
-
-            for (int j = 0; j < modules.getLength(); j++) {
-                Node node = modules.item(j);
-                NamedNodeMap attr = node.getAttributes();
-                String filepath = attr.getNamedItem("filepath").getNodeValue();
-                // System.out.println(filepath);
-                String[] ss = filepath.split("/");
-                if (ss.length <= 2) {
-                    continue;
-                }
-
-                StringBuilder sb = new StringBuilder(basePath);
-                for (int i = 1; i < ss.length - 1; i++) {
-                    sb.append("/");
-                    sb.append(ss[i]);
-                }
-                dirs.add(sb.toString());
-
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private void findPackage(String filePath, Set<String> list) {
@@ -170,23 +173,44 @@ public class EormEntityGeneratorMenu extends AnAction {
         }
     }
 
-    public static void main(String[] args) {
-        Set<String> list = new HashSet<String>();
-        String[] dirs = {"/Users/mac/Documents/idea-plugin/test1/src/main/java",
-                "/Users/mac/Documents/idea-plugin/test2/test2-module1/src/main/java"};
-
-        EormEntityGeneratorMenu menuAnAction = new EormEntityGeneratorMenu();
-        for (String dir : dirs) {
-            menuAnAction.findPackage(dir, list);
+    private static void findSourceDir(List<String> sourceDirs, String fileDir) {
+        File file = new File(fileDir);
+        File[] files = file.listFiles();// 获取目录下的所有文件或文件夹
+        if (files == null) {// 如果目录为空，直接退出
+            return;
         }
-        for (String p : list) {
-            for (String dir : dirs) {
-                if (p.startsWith(dir)) {
-                    String pg = p.replace(dir + "/", "").replaceAll("/", ".");
-                    System.out.println(pg);
-                }
+        // 所有目录
+        for (File f : files) {
+            if (!f.isDirectory()) {
+                continue;
+            }
+
+            String path = f.getAbsolutePath();
+            if (path.contains(SOURCE_DIR) && ENTITY_NAMES.contains(f.getName())) {
+                sourceDirs.add(path);
+            }
+            findSourceDir(sourceDirs, f.getAbsolutePath());
+        }
+    }
+
+    public static void main(String[] args) {
+
+
+        String basePath = "/Users/mac/IdeaProjects/tengyue";
+
+        List<String> sourceDirs = new ArrayList<>();
+        findSourceDir(sourceDirs, basePath);
+
+        Map<String, String> packageNamePath = new HashMap<>();
+        for (String path : sourceDirs) {
+            int start = path.indexOf(SOURCE_DIR);
+            if (path.length() > start + SOURCE_DIR.length() + 1) {
+                String name = path.substring(start + SOURCE_DIR.length() + 1);
+                name = name.replaceAll("/", ".");
+                packageNamePath.put(name, path);
             }
         }
-        System.out.println(list);
+        System.out.println(packageNamePath);
+
     }
 }

@@ -10,7 +10,7 @@ import com.denghb.eorm.annotation.Etable;
 <#if config.since > * @since ${generateTime}
 </#if> */
 <#if config.lombok >@lombok.Data()
-@Etable(name = "${table.tableName}"<#if config.schema >, database="${config.database}"</#if>)<#else>@Etable(name="${table.tableName}"<#if config.schema >, database="${config.database}"</#if>)</#if>
+@Etable(name = "${table.tableName}"<#if config.schema >, database = "${config.database}"</#if>)<#else>@Etable(name = "${table.tableName}"<#if config.schema >, database = "${config.database}"</#if>)</#if>
 public class ${className} implements java.io.Serializable {
 
     <#list table.columns as column >

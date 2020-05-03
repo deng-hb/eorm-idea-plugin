@@ -4,9 +4,7 @@ import com.denghb.eorm.generator.model.TableModel;
 import com.denghb.eorm.provider.TableDataCallback;
 import com.denghb.eorm.provider.TableDataProvider;
 import com.denghb.eorm.utils.JdbcUtils;
-import com.intellij.openapi.util.IconLoader;
-import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
+import com.denghb.eorm.plugin.utils.StringUtils;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -116,6 +114,7 @@ public class EntityGeneratorDialog extends JDialog {
 
     private void onLoad() {
         refreshConfig();
+
         String jdbc = config.getJdbc();
         if (StringUtils.isBlank(loadButton.getText())) {
             System.out.println("loading ..");
@@ -225,22 +224,21 @@ public class EntityGeneratorDialog extends JDialog {
         config.setPackageName((String) packageComboBox.getSelectedItem());
 
         config.setDatabase(JdbcUtils.getDatabase(jdbcField.getText()));
+
+        if (null != entityGeneratorHandler) {
+            entityGeneratorHandler.onConfig(config);
+        }
     }
 
     private void onOK() {
-        // add your code here
         refreshConfig();
 
-        System.out.println(config);
-        // dispose();
-
         if (null != entityGeneratorHandler) {
-            entityGeneratorHandler.onCallback(data, config);
+            entityGeneratorHandler.onCallback(data);
         }
     }
 
     private void onCancel() {
-        // add your code here if necessary
         dispose();
     }
 
