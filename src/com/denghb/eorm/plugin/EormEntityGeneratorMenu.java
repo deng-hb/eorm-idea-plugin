@@ -25,8 +25,8 @@ import java.util.*;
  */
 public class EormEntityGeneratorMenu extends AnAction {
 
-    // 存Java源代码的文件目录
-    private final static String SOURCE_DIR = "/src/main/java";
+    // 存Java源代码的文件目录 src/java/main
+    private final static String SOURCE_DIR = "src" + File.separator + "main" + File.separator + "java";
 
     // 存实体类的包名
     private final static List<String> ENTITY_NAMES = Arrays.asList("entity", "domain");
@@ -50,6 +50,7 @@ public class EormEntityGeneratorMenu extends AnAction {
             int start = path.indexOf(SOURCE_DIR);
             if (path.length() > start + SOURCE_DIR.length() + 1) {
                 String name = path.substring(start + SOURCE_DIR.length() + 1);
+                name = name.replaceAll("\\\\", ".");
                 name = name.replaceAll("/", ".");
                 packageNamePath.put(name, path);
             }
@@ -166,7 +167,7 @@ public class EormEntityGeneratorMenu extends AnAction {
         }
         for (File file : files) {
             if (file.isDirectory()) {
-                findPackage(filePath + "/" + file.getName(), list);
+                findPackage(filePath + File.separator + file.getName(), list);
             } else {
                 list.add(filePath);
             }
