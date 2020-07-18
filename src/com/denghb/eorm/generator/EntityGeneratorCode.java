@@ -107,10 +107,11 @@ public class EntityGeneratorCode {
     private static String dataType2JavaType(ColumnModel column, boolean bigDecimal) {
         String dataType = column.getDataType().toLowerCase();
         String columnType = column.getColumnType().toLowerCase();
-        BigInteger length = column.getLength();
 
         String BIG_DECIMAL = "java.math.BigDecimal";
-
+        if ("tinyint(1)".equals(columnType)) {
+            return "Boolean";
+        }
         switch (dataType) {
             case "char":
             case "varchar":
@@ -120,16 +121,13 @@ public class EntityGeneratorCode {
             case "mediumtext":
                 return "String";
             case "tinyint":
-                return length.intValue() == 1 ? "Boolean" : "Integer";
             case "smallint":
             case "int":
             case "integer":
                 return "Integer";
             case "long":
-                return "Long";
             case "bigint":
-                // 无符号
-                return columnType.endsWith("unsigned") || length.intValue() > 19 ? "java.math.BigInteger" : "Long";
+                return "Long";
             case "float":
                 return bigDecimal ? BIG_DECIMAL : "Float";
             case "double":
