@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.denghb.eorm.plugin</id>
     <name>Eorm</name>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
     <vendor email="i@denghb.com" url="https://github.com/deng-hb/eorm-idea-plugin">eorm-idea-plugin</vendor>
 
     <description>
@@ -9,6 +9,8 @@
       <h2>Eorm plugin</h2>
       <p>Used for <a target="_blank" href="https://github.com/deng-hb/eorm-spring">Eorm-spring</a></p>
       <p>Eorm based spring-jdbc JdbcTemplate & NamedParameterJdbcTemplate a every every good ORM framework.</p>
+      <h3>v1.0.6</h3>
+      <p>Fix Windows Message Dialog Can not close.</p>
       <h3>v1.0.5</h3>
       <p>Update Entity Generator</p>
       <h3>v1.0.4</h3>
