@@ -47,7 +47,15 @@ public class EntityGeneratorCode {
             root.put("className", className);
             root.put("generateTime", generateTime);
 
-            File file = new File(path + "/" + className + ".java");
+            String etable = "Etable",ecolumn = "Ecolumn";
+            if ("v2".equals(config.getVersion())) {
+                etable = "ETable";
+                ecolumn = "EColumn";
+            }
+            root.put("etable", etable);
+            root.put("ecolumn", ecolumn);
+
+            File file = new File(path + File.separator + className + ".java");
 
             if (!config.isOverride() && file.exists()) {
                 return;

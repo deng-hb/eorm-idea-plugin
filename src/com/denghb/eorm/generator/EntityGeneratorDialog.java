@@ -31,11 +31,14 @@ public class EntityGeneratorDialog extends JDialog {
     private JTextField authorField;
     private JTextField prefixField;
     private JCheckBox bigDecimalCheckBox;
+    private JComboBox versionComboBox;
 
     private List<TableModel> data = new ArrayList<TableModel>();
     private List<TableModel> origin = new ArrayList<TableModel>();
     private Config config;
     private EntityGeneratorHandler entityGeneratorHandler;
+
+    private DataTableHeaderCellRenderer cellRenderer;
 
     public EntityGeneratorDialog(Config config) {
         this.setTitle("Eorm entity generator");
@@ -47,7 +50,10 @@ public class EntityGeneratorDialog extends JDialog {
 
         // 表格
         dataTable.setModel(new DataTableModel(data));
-        dataTable.getTableHeader().setDefaultRenderer(new DataTableHeaderCellRenderer(dataTable));
+
+        cellRenderer = new DataTableHeaderCellRenderer(dataTable);
+
+        dataTable.getTableHeader().setDefaultRenderer(cellRenderer);
         dataTable.getTableHeader().setPreferredSize(new Dimension(0, 20));
         //设置表内容行高
         dataTable.setRowHeight(25);
@@ -132,12 +138,21 @@ public class EntityGeneratorDialog extends JDialog {
 
         TableDataProvider.load(jdbc, new TableDataCallback() {
             @Override
-            public void on(List<TableModel> tables) {
+            public void onData(List<TableModel> tables) {
+
+                boolean checked = cellRenderer.selectBox.isSelected();
+
+                for (TableModel tm : tables) {
+                    tm.setChecked(checked);
+                }
+
                 data.clear();
                 data.addAll(tables);
 
                 origin.clear();
                 origin.addAll(tables);
+
+                refreshConfig();
 
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
@@ -190,6 +205,10 @@ public class EntityGeneratorDialog extends JDialog {
         packageComboBox.setSelectedItem(config.getPackageName());
         packageComboBox.updateUI();
 
+        versionComboBox.addItem("v1");
+        versionComboBox.addItem("v2");
+        versionComboBox.setSelectedItem(StringUtils.isBlank(config.getVersion()) ? "v1" : config.getVersion());
+        versionComboBox.updateUI();
     }
 
     private void filterData(String key) {
@@ -220,10 +239,10 @@ public class EntityGeneratorDialog extends JDialog {
 
         config.setSince(sinceCheckBox.isSelected());
         config.setSchema(schemaCheckBox.isSelected());
-
         config.setPackageName((String) packageComboBox.getSelectedItem());
 
         config.setDatabase(JdbcUtils.getDatabase(jdbcField.getText()));
+        config.setVersion((String) versionComboBox.getSelectedItem());
 
         if (null != entityGeneratorHandler) {
             entityGeneratorHandler.onConfig(config);

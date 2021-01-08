@@ -33,6 +33,8 @@ public class EormEntityGeneratorMenu extends AnAction {
 
     private static String KEY_CONFIG = null;
 
+    private EntityGeneratorDialog _dialog;
+
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
 
@@ -63,8 +65,8 @@ public class EormEntityGeneratorMenu extends AnAction {
         }
         config.setPackageNamePath(packageNamePath);
 
-        EntityGeneratorDialog dialog = new EntityGeneratorDialog(config);
-        dialog.setEntityGeneratorHandler(new EntityGeneratorHandler() {
+        _dialog = new EntityGeneratorDialog(config);
+        _dialog.setEntityGeneratorHandler(new EntityGeneratorHandler() {
 
             @Override
             public void onCallback(List<TableModel> data) {
@@ -85,19 +87,20 @@ public class EormEntityGeneratorMenu extends AnAction {
                 setConfig(config);
             }
         });
-        dialog.setSize(560, 400);
-        dialog.setAlwaysOnTop(true);
+        _dialog.setSize(560, 400);
+        _dialog.setAlwaysOnTop(true);
         // dialog.setResizable(false);
 //        dialog.setModal(true);
-        dialog.setLocationRelativeTo(null);
-        dialog.setVisible(true);
-        dialog.requestFocus();
+        _dialog.setLocationRelativeTo(null);
+        _dialog.setVisible(true);
+        _dialog.requestFocus();
     }
 
     private void doExc(List<TableModel> data) {
+
         String generateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-        int succ = 0;
-        int fail = 0;
+        int success = 0;
+        int check = 0;
         Config config = getConfig();
         if (StringUtils.isBlank(config.getPackageName())) {
             showMessage("Package Not Empty \nPackage name eq 'entity' or 'domain'", "Error");
@@ -105,19 +108,23 @@ public class EormEntityGeneratorMenu extends AnAction {
         }
         for (TableModel table : data) {
             if (table.isChecked()) {
+                check++;
                 try {
                     EntityGeneratorCode.doExec(table, config, generateTime);
-                    succ++;
+                    success++;
                 } catch (Exception e) {
-                    fail++;
                     e.printStackTrace();
                     showMessage(e.getMessage(), "Error");
+                    return;
                 }
             }
         }
-        if (succ > 0 || fail > 0) {
-            showMessage(String.format("Success:%d\nFail:%d", succ, fail), "Info");
+
+        if (0 == check) {
+            showMessage("Checked is empty", "Error");
+            return;
         }
+        showMessage(String.format("Success: %d", success), "Info");
     }
 
 
@@ -148,30 +155,10 @@ public class EormEntityGeneratorMenu extends AnAction {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                Messages.showErrorDialog(message, title);
+                // Messages.showInfoMessage(message, title);
+                JOptionPane.showMessageDialog(_dialog, message, title, JOptionPane.INFORMATION_MESSAGE);
             }
         });
-    }
-
-    private void findPackage(String filePath, Set<String> list) {
-        File dir = new File(filePath);
-        if (!dir.isDirectory()) {
-            return;
-        }
-        File[] files = dir.listFiles();
-        if (null == files) {
-            return;
-        }
-        if (0 == files.length) {
-            list.add(filePath);
-        }
-        for (File file : files) {
-            if (file.isDirectory()) {
-                findPackage(filePath + File.separator + file.getName(), list);
-            } else {
-                list.add(filePath);
-            }
-        }
     }
 
     private static void findSourceDir(List<String> sourceDirs, String fileDir) {

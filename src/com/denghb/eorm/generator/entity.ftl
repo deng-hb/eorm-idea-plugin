@@ -1,7 +1,7 @@
 package ${config.packageName};
 
-import com.denghb.eorm.annotation.Ecolumn;
-import com.denghb.eorm.annotation.Etable;
+import com.denghb.eorm.annotation.${ecolumn};
+import com.denghb.eorm.annotation.${etable};
 
 /**
  * ${table.tableComment}
@@ -10,12 +10,12 @@ import com.denghb.eorm.annotation.Etable;
 <#if config.since > * @since ${generateTime}
 </#if> */
 <#if config.lombok >@lombok.Data()
-@Etable(name = "${table.tableName}"<#if config.schema >, database = "${config.database}"</#if>)<#else>@Etable(name = "${table.tableName}"<#if config.schema >, database = "${config.database}"</#if>)</#if>
+@${etable}(name = "${table.tableName}"<#if config.schema >, database = "${config.database}"</#if>)<#else>@${etable}(name = "${table.tableName}"<#if config.schema >, database = "${config.database}"</#if>)</#if>
 public class ${className} implements java.io.Serializable {
 
     <#list table.columns as column >
     /** ${column.columnComment} */
-    @Ecolumn(name = "${column.columnName}"<#if column.columnKey = "PRI">, primaryKey = true</#if>)
+    @${ecolumn}(name = "${column.columnName}"<#if column.columnKey = "PRI">, primaryKey = true</#if>)
     private ${column.javaType} ${column.objectName};
 
     </#list>

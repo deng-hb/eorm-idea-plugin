@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="1b3530bc-4397-416c-aa44-e15c87d03eeb" name="Default Changelist" comment="fix windows separator">
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/lib.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/eorm-idea-plugin.iml" beforeDir="false" afterPath="$PROJECT_DIR$/eorm-idea-plugin.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/denghb/eorm/generator/Config.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/denghb/eorm/generator/Config.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/denghb/eorm/generator/DataTableHeaderCellRenderer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/denghb/eorm/generator/DataTableHeaderCellRenderer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/denghb/eorm/generator/EntityGeneratorCode.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/denghb/eorm/generator/EntityGeneratorCode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/denghb/eorm/generator/EntityGeneratorDialog.form" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/denghb/eorm/generator/EntityGeneratorDialog.form" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/denghb/eorm/generator/EntityGeneratorDialog.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/denghb/eorm/generator/EntityGeneratorDialog.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/denghb/eorm/generator/entity.ftl" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/denghb/eorm/generator/entity.ftl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/denghb/eorm/plugin/EormEntityGeneratorMenu.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/denghb/eorm/plugin/EormEntityGeneratorMenu.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/denghb/eorm/plugin/MultiLineSQLSmartTipHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/denghb/eorm/plugin/MultiLineSQLSmartTipHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/denghb/eorm/provider/TableDataCallback.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/denghb/eorm/provider/TableDataCallback.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/denghb/eorm/provider/TableDataProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/denghb/eorm/provider/TableDataProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/com/denghb/eorm/provider/TableDataTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/com/denghb/eorm/provider/TableDataMySQLTask.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitToolBoxStore">
+    <option name="projectConfigVersion" value="2" />
+  </component>
+  <component name="LogFilters">
+    <option name="FILTER_ERRORS" value="false" />
+    <option name="FILTER_WARNINGS" value="false" />
+    <option name="FILTER_INFO" value="true" />
+    <option name="FILTER_DEBUG" value="true" />
+    <option name="CUSTOM_FILTER" />
+  </component>
+  <component name="ProjectId" id="1bOy0SPsXhytCemaIUPvpxNJ0I9" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/lib" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Administrator\IdeaProjects\eorm-idea-plugin" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="Plugin" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType">
+      <module name="eorm-idea-plugin" />
+      <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -ea" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <predefined_log_file enabled="true" id="idea.log" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType">
+      <module name="eorm-idea-plugin" />
+      <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -ea" />
+      <option name="PROGRAM_PARAMETERS" />
+      <predefined_log_file enabled="true" id="idea.log" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="1b3530bc-4397-416c-aa44-e15c87d03eeb" name="Default Changelist" comment="" />
+      <created>1588517210652</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1588517210652</updated>
+    </task>
+    <task id="LOCAL-00001" summary="fix windows separator">
+      <created>1588519520475</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1588519520475</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ORDER">
+      <list>
+        <option value="0" />
+        <option value="2" />
+        <option value="3" />
+        <option value="1" />
+      </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="fix windows separator" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix windows separator" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="1140" y="377" key="#com.intellij.ide.util.MemberChooser" timestamp="1610091720659">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="1140" y="377" key="#com.intellij.ide.util.MemberChooser/0.0.2560.1400@0.0.2560.1400" timestamp="1610091720659" />
+    <state width="418" height="466" key="DebuggerActiveHint" timestamp="1610098575918">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state width="418" height="466" key="DebuggerActiveHint/0.0.2560.1400@0.0.2560.1400" timestamp="1610098575918" />
+    <state x="454" y="292" width="1762" height="800" key="DiffContextDialog" timestamp="1610097052363">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="454" y="292" width="1762" height="800" key="DiffContextDialog/0.0.2560.1400@0.0.2560.1400" timestamp="1610097052363" />
+    <state width="2517" height="288" key="GridCell.Tab.0.bottom" timestamp="1610099514668">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state width="2517" height="288" key="GridCell.Tab.0.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1610099514668" />
+    <state width="2517" height="288" key="GridCell.Tab.0.center" timestamp="1610099514668">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state width="2517" height="288" key="GridCell.Tab.0.center/0.0.2560.1400@0.0.2560.1400" timestamp="1610099514668" />
+    <state width="2517" height="288" key="GridCell.Tab.0.left" timestamp="1610099514668">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state width="2517" height="288" key="GridCell.Tab.0.left/0.0.2560.1400@0.0.2560.1400" timestamp="1610099514668" />
+    <state width="2517" height="288" key="GridCell.Tab.0.right" timestamp="1610099514668">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state width="2517" height="288" key="GridCell.Tab.0.right/0.0.2560.1400@0.0.2560.1400" timestamp="1610099514668" />
+    <state width="2517" height="288" key="GridCell.Tab.1.bottom" timestamp="1610099514552">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state width="2517" height="288" key="GridCell.Tab.1.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1610099514552" />
+    <state width="2517" height="288" key="GridCell.Tab.1.center" timestamp="1610099514552">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state width="2517" height="288" key="GridCell.Tab.1.center/0.0.2560.1400@0.0.2560.1400" timestamp="1610099514552" />
+    <state width="2517" height="288" key="GridCell.Tab.1.left" timestamp="1610099514551">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state width="2517" height="288" key="GridCell.Tab.1.left/0.0.2560.1400@0.0.2560.1400" timestamp="1610099514551" />
+    <state width="2517" height="288" key="GridCell.Tab.1.right" timestamp="1610099514552">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state width="2517" height="288" key="GridCell.Tab.1.right/0.0.2560.1400@0.0.2560.1400" timestamp="1610099514552" />
+    <state width="2517" height="288" key="GridCell.Tab.2.bottom" timestamp="1610099514553">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state width="2517" height="288" key="GridCell.Tab.2.bottom/0.0.2560.1400@0.0.2560.1400" timestamp="1610099514553" />
+    <state width="2517" height="288" key="GridCell.Tab.2.center" timestamp="1610099514553">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state width="2517" height="288" key="GridCell.Tab.2.center/0.0.2560.1400@0.0.2560.1400" timestamp="1610099514553" />
+    <state width="2517" height="288" key="GridCell.Tab.2.left" timestamp="1610099514553">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state width="2517" height="288" key="GridCell.Tab.2.left/0.0.2560.1400@0.0.2560.1400" timestamp="1610099514553" />
+    <state width="2517" height="288" key="GridCell.Tab.2.right" timestamp="1610099514553">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state width="2517" height="288" key="GridCell.Tab.2.right/0.0.2560.1400@0.0.2560.1400" timestamp="1610099514553" />
+    <state x="836" y="337" key="SettingsEditor" timestamp="1610096174093">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="836" y="337" key="SettingsEditor/0.0.2560.1400@0.0.2560.1400" timestamp="1610096174093" />
+    <state x="1032" y="424" width="605" height="536" key="find.popup" timestamp="1610097649119">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="1032" y="424" width="605" height="536" key="find.popup/0.0.2560.1400@0.0.2560.1400" timestamp="1610097649119" />
+  </component>
+</project>

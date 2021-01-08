@@ -12,14 +12,13 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-public class TableDataTask implements Runnable {
+public class TableDataMySQLTask implements Runnable {
 
     private String jdbc;
     private TableDataCallback tableDataCallback;
 
-    public TableDataTask(String jdbc, TableDataCallback tableDataCallback) {
+    public TableDataMySQLTask(String jdbc, TableDataCallback tableDataCallback) {
         this.jdbc = jdbc;
         this.tableDataCallback = tableDataCallback;
     }
@@ -57,7 +56,7 @@ public class TableDataTask implements Runnable {
                 }
             }
 
-            tableDataCallback.on(tables);
+            tableDataCallback.onData(tables);
         } catch (Exception e) {
             e.printStackTrace();
             tableDataCallback.onMessage(e.getMessage());

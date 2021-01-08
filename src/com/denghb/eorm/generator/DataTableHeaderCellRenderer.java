@@ -17,13 +17,13 @@ public class DataTableHeaderCellRenderer implements TableCellRenderer {
 
     DataTableModel tableModel;
     JTableHeader tableHeader;
-    final JCheckBox selectBox;
+    JCheckBox selectBox;
 
     public DataTableHeaderCellRenderer(final JTable table) {
         this.tableModel = (DataTableModel) table.getModel();
         this.tableHeader = table.getTableHeader();
         selectBox = new JCheckBox(tableModel.getColumnName(table.getColumnCount() - 1));
-        selectBox.setSelected(false);
+        selectBox.setSelected(true);
         tableHeader.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() > 0) {

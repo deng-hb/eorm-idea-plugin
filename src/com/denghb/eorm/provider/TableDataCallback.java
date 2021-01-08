@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface TableDataCallback {
 
-    void on(List<TableModel> tables);
+    void onData(List<TableModel> tables);
 
     void onMessage(String message);
 }

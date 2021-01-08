@@ -128,7 +128,7 @@ public class MultiLineSQLSmartTipHandler extends TypedHandlerDelegate {
         if (null != config) {
             TableDataProvider.load(config.getJdbc(), new TableDataCallback() {
                 @Override
-                public void on(List<TableModel> tables) {
+                public void onData(List<TableModel> tables) {
                     DATA_TABLES.clear();
                     DATA_TABLES.addAll(tables);
                     System.out.println("tables init " + tables.size());

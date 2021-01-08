@@ -29,6 +29,8 @@ public class Config {
 
     private Map<String, String> packageNamePath;
 
+    private String version;// 版本
+
     public String getJdbc() {
         return jdbc;
     }
@@ -117,6 +119,14 @@ public class Config {
         this.packageNamePath = packageNamePath;
     }
 
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
     @Override
     public String toString() {
         return "Config{" +
@@ -131,6 +141,7 @@ public class Config {
                 ", author='" + author + '\'' +
                 ", packageName='" + packageName + '\'' +
                 ", packageNamePath=" + packageNamePath +
+                ", version='" + version + '\'' +
                 '}';
     }
 }
