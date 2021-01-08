@@ -1,4 +1,7 @@
 ## Eorm idea plugin
+
+![logo](./resources/META-INF/pluginIcon.svg)
+
 <p>Used for <a target="_blank" href="https://github.com/deng-hb/eorm-spring">Eorm-spring</a></p>
 <p>Eorm based spring-jdbc JdbcTemplate & NamedParameterJdbcTemplate a every every good ORM framework.</p>
 

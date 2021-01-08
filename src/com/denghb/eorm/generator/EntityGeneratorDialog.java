@@ -24,14 +24,14 @@ public class EntityGeneratorDialog extends JDialog {
     private JTextField filterField;
     private JCheckBox overrideCheckBox;
     private JButton loadButton;
-    private JComboBox packageComboBox;
+    private JComboBox<String> packageComboBox;
     private JTextField jdbcField;
     private JCheckBox schemaCheckBox;
     private JCheckBox sinceCheckBox;
     private JTextField authorField;
     private JTextField prefixField;
     private JCheckBox bigDecimalCheckBox;
-    private JComboBox versionComboBox;
+    private JComboBox<String> versionComboBox;
 
     private List<TableModel> data = new ArrayList<TableModel>();
     private List<TableModel> origin = new ArrayList<TableModel>();
@@ -207,7 +207,7 @@ public class EntityGeneratorDialog extends JDialog {
 
         versionComboBox.addItem("v1");
         versionComboBox.addItem("v2");
-        versionComboBox.setSelectedItem(StringUtils.isBlank(config.getVersion()) ? "v1" : config.getVersion());
+        versionComboBox.setSelectedItem(StringUtils.isBlank(config.getVersion()) ? "v2" : config.getVersion());
         versionComboBox.updateUI();
     }
 
